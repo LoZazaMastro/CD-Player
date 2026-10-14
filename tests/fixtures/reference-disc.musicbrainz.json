@@ -1,0 +1,2849 @@
+{
+  "id": "_GDJVYrAWd5Jcxqg32msRDz7aA4-",
+  "sectors": 298513,
+  "offsets": [
+    150,
+    28881,
+    53688,
+    80005,
+    110081,
+    128052,
+    155803,
+    206103,
+    239158,
+    268297
+  ],
+  "offset-count": 10,
+  "releases": [
+    {
+      "disambiguation": "",
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "artist-credit": [
+        {
+          "artist": {
+            "country": "US",
+            "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+            "sort-name": "War on Drugs, The",
+            "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+            "disambiguation": "",
+            "name": "The War on Drugs",
+            "type": "Group"
+          },
+          "name": "The War on Drugs",
+          "joinphrase": ""
+        }
+      ],
+      "title": "A Deeper Understanding",
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "asin": "B071FL9473",
+      "country": "XE",
+      "packaging": "Digipak",
+      "quality": "normal",
+      "media": [
+        {
+          "format": "CD",
+          "position": 1,
+          "id": "54323aa3-f371-32a6-a27f-499cd9a00486",
+          "format-id": "9712d52a-4509-3d4b-a1a2-67c88c643e31",
+          "title": "",
+          "track-offset": 0,
+          "tracks": [
+            {
+              "id": "dcda493f-e1b1-457c-ab4a-dc04d028e13e",
+              "position": 1,
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  }
+                }
+              ],
+              "number": "1",
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-15",
+                "title": "Up All Night",
+                "length": 383080,
+                "id": "30b56510-51d4-4d24-a460-fa2b24782114",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US"
+                    }
+                  }
+                ]
+              },
+              "length": 383080,
+              "title": "Up All Night"
+            },
+            {
+              "number": "2",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "position": 2,
+              "id": "2a72ff7a-ef1d-4957-bb90-3bd37ddd828a",
+              "title": "Pain",
+              "length": 330760,
+              "recording": {
+                "first-release-date": "2017-08-04",
+                "video": false,
+                "length": 330760,
+                "title": "Pain",
+                "id": "c5af5351-dbbf-4481-b52e-a480b6c57986",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ]
+              }
+            },
+            {
+              "length": 350893,
+              "recording": {
+                "title": "Holding On",
+                "length": 350893,
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "disambiguation": "",
+                "video": false,
+                "first-release-date": "2017-06-01"
+              },
+              "title": "Holding On",
+              "number": "3",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "position": 3,
+              "id": "e4dadda5-9382-4368-82b8-bb1fdf93793a"
+            },
+            {
+              "recording": {
+                "length": 401013,
+                "title": "Strangest Thing",
+                "disambiguation": "",
+                "id": "3559bce2-59d4-4384-93f2-b91db8c7b605",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                    }
+                  }
+                ],
+                "first-release-date": "2017-07-20",
+                "video": false
+              },
+              "length": 401013,
+              "title": "Strangest Thing",
+              "position": 4,
+              "id": "214fc159-b097-4432-8ebd-bc6f53f7d272",
+              "number": "4",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "Knocked Down",
+              "recording": {
+                "disambiguation": "",
+                "id": "88ac7bf8-224e-4a3a-b03f-5a0444e0a460",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "length": 239613,
+                "title": "Knocked Down",
+                "first-release-date": "2017-08-25",
+                "video": false
+              },
+              "length": 239613,
+              "id": "526697db-0d58-47e2-aa19-3b0279d64e8f",
+              "position": 5,
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "5"
+            },
+            {
+              "id": "0939fe76-56ab-460d-866e-b3b29150e82b",
+              "position": 6,
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "number": "6",
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "disambiguation": "",
+                "title": "Nothing to Find",
+                "length": 370000
+              },
+              "length": 370013,
+              "title": "Nothing to Find"
+            },
+            {
+              "number": "7",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ],
+              "id": "f87b518b-6047-428a-a387-c9705e82539d",
+              "position": 7,
+              "length": 670666,
+              "recording": {
+                "first-release-date": "2017-04-28",
+                "video": false,
+                "length": 670666,
+                "title": "Thinking of a Place",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "id": "1992efbf-d907-46c9-ad99-ad0ee2220758",
+                "disambiguation": ""
+              },
+              "title": "Thinking of a Place"
+            },
+            {
+              "title": "In Chains",
+              "length": 440733,
+              "recording": {
+                "id": "576fa9c3-bd77-4230-8ee8-00933664a18f",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "title": "In Chains",
+                "length": 440733,
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "artist-credit": [
+                {
+                  "artist": {
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "8",
+              "position": 8,
+              "id": "1d127295-85d5-46e7-adeb-9cd33e3b5ef2"
+            },
+            {
+              "position": 9,
+              "id": "34e57ba6-035b-439e-83c3-614c8e608b17",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                  }
+                }
+              ],
+              "number": "9",
+              "title": "Clean Living",
+              "recording": {
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "0c9c6d62-67f0-47cd-a33c-9d6728704446",
+                "length": 388520,
+                "title": "Clean Living",
+                "first-release-date": "2017-08-25",
+                "video": false
+              },
+              "length": 388520
+            },
+            {
+              "title": "You Don’t Have to Go",
+              "length": 402880,
+              "recording": {
+                "id": "6a205fee-0e9f-4b6a-9a75-ce121a1fb21e",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                    }
+                  }
+                ],
+                "length": 402880,
+                "title": "You Don’t Have to Go",
+                "first-release-date": "2017-08-25",
+                "video": false
+              },
+              "number": "10",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ],
+              "id": "62eab101-452f-456a-ac0b-f9fb912aac11",
+              "position": 10
+            }
+          ],
+          "discs": [
+            {
+              "sectors": 298513,
+              "offsets": [
+                150,
+                28881,
+                53688,
+                80005,
+                110081,
+                128052,
+                155803,
+                206103,
+                239158,
+                268297
+              ],
+              "id": "_GDJVYrAWd5Jcxqg32msRDz7aA4-",
+              "offset-count": 10
+            }
+          ],
+          "track-count": 10
+        }
+      ],
+      "status": "Official",
+      "id": "9fc5a673-4646-4ec7-b73b-c9ca9be03ee0",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "date": "2017-08-25",
+      "cover-art-archive": {
+        "darkened": false,
+        "front": true,
+        "count": 14,
+        "artwork": true,
+        "back": true
+      },
+      "release-events": [
+        {
+          "area": {
+            "sort-name": "Europe",
+            "type-id": null,
+            "id": "89a675c2-3e37-3518-b83c-418bad59a85a",
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "XE"
+            ],
+            "type": null,
+            "name": "Europe"
+          },
+          "date": "2017-08-25"
+        }
+      ],
+      "barcode": "075678660634"
+    },
+    {
+      "barcode": "075678660320",
+      "release-events": [
+        {
+          "area": {
+            "type": null,
+            "name": "United States",
+            "type-id": null,
+            "sort-name": "United States",
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "US"
+            ]
+          },
+          "date": "2017-08-25"
+        }
+      ],
+      "date": "2017-08-25",
+      "cover-art-archive": {
+        "darkened": false,
+        "front": true,
+        "artwork": true,
+        "count": 1,
+        "back": false
+      },
+      "status": "Official",
+      "id": "19ea4c00-b145-49ac-92a1-69ca7e021b7a",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "packaging": "Other",
+      "media": [
+        {
+          "track-offset": 0,
+          "tracks": [
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "1",
+              "id": "05bfae19-7c44-4109-87c0-9bc21e2d082a",
+              "position": 1,
+              "length": 383080,
+              "recording": {
+                "first-release-date": "2017-08-15",
+                "video": false,
+                "length": 383080,
+                "title": "Up All Night",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "id": "30b56510-51d4-4d24-a460-fa2b24782114",
+                "disambiguation": ""
+              },
+              "title": "Up All Night"
+            },
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "2",
+              "position": 2,
+              "id": "371c9f30-08f3-41e4-b68b-58fc94dbfae0",
+              "title": "Pain",
+              "length": 330760,
+              "recording": {
+                "first-release-date": "2017-08-04",
+                "video": false,
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "id": "c5af5351-dbbf-4481-b52e-a480b6c57986",
+                "disambiguation": "",
+                "length": 330760,
+                "title": "Pain"
+              }
+            },
+            {
+              "recording": {
+                "first-release-date": "2017-06-01",
+                "video": false,
+                "length": 350893,
+                "title": "Holding On",
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ]
+              },
+              "length": 350893,
+              "title": "Holding On",
+              "id": "0b011065-229e-4d47-a62d-bc520b2e9f36",
+              "position": 3,
+              "number": "3",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  }
+                }
+              ]
+            },
+            {
+              "title": "Strangest Thing",
+              "length": 401013,
+              "recording": {
+                "title": "Strangest Thing",
+                "length": 401013,
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "id": "3559bce2-59d4-4384-93f2-b91db8c7b605",
+                "disambiguation": "",
+                "video": false,
+                "first-release-date": "2017-07-20"
+              },
+              "number": "4",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "id": "7a58703c-6a2b-45e2-a358-989fc928053e",
+              "position": 4
+            },
+            {
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "88ac7bf8-224e-4a3a-b03f-5a0444e0a460",
+                "title": "Knocked Down",
+                "length": 239613
+              },
+              "length": 239613,
+              "title": "Knocked Down",
+              "id": "58a29003-9751-455b-bd86-8b628ca7bf82",
+              "position": 5,
+              "number": "5",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ]
+            },
+            {
+              "id": "5e0f8bd0-d0e6-4a40-a323-fc0be76c844e",
+              "position": 6,
+              "number": "6",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ],
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "title": "Nothing to Find",
+                "length": 370000,
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ]
+              },
+              "length": 370013,
+              "title": "Nothing to Find"
+            },
+            {
+              "title": "Thinking of a Place",
+              "recording": {
+                "id": "1992efbf-d907-46c9-ad99-ad0ee2220758",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                    }
+                  }
+                ],
+                "title": "Thinking of a Place",
+                "length": 670666,
+                "video": false,
+                "first-release-date": "2017-04-28"
+              },
+              "length": 670666,
+              "id": "573a0a3a-b953-482a-9eda-4eb053c7a4df",
+              "position": 7,
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                  }
+                }
+              ],
+              "number": "7"
+            },
+            {
+              "position": 8,
+              "id": "37e5b77c-88b5-49b8-a554-51ff6f0b46bd",
+              "number": "8",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "title": "In Chains",
+              "recording": {
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "576fa9c3-bd77-4230-8ee8-00933664a18f",
+                "length": 440733,
+                "title": "In Chains",
+                "first-release-date": "2017-08-25",
+                "video": false
+              },
+              "length": 440733
+            },
+            {
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "length": 388520,
+                "title": "Clean Living",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "disambiguation": "",
+                "id": "0c9c6d62-67f0-47cd-a33c-9d6728704446"
+              },
+              "length": 388520,
+              "title": "Clean Living",
+              "id": "d70f35b6-03bf-4739-b120-8de5552eff94",
+              "position": 9,
+              "number": "9",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ]
+            },
+            {
+              "number": "10",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "id": "775ee7d7-1463-47f7-ab8f-1aed76162b17",
+              "position": 10,
+              "length": 402880,
+              "recording": {
+                "title": "You Don’t Have to Go",
+                "length": 402880,
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "disambiguation": "",
+                "id": "6a205fee-0e9f-4b6a-9a75-ce121a1fb21e",
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "title": "You Don’t Have to Go"
+            }
+          ],
+          "discs": [
+            {
+              "offset-count": 10,
+              "id": "_GDJVYrAWd5Jcxqg32msRDz7aA4-",
+              "sectors": 298513,
+              "offsets": [
+                150,
+                28881,
+                53688,
+                80005,
+                110081,
+                128052,
+                155803,
+                206103,
+                239158,
+                268297
+              ]
+            }
+          ],
+          "track-count": 10,
+          "format": "CD",
+          "position": 1,
+          "id": "c9d600d0-fe56-34a0-b7e0-c34cc87431eb",
+          "format-id": "9712d52a-4509-3d4b-a1a2-67c88c643e31",
+          "title": "A Deeper Understanding"
+        },
+        {
+          "track-offset": 0,
+          "tracks": [
+            {
+              "title": "Up All Night",
+              "recording": {
+                "disambiguation": "",
+                "id": "30b56510-51d4-4d24-a460-fa2b24782114",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "title": "Up All Night",
+                "length": 383080,
+                "video": false,
+                "first-release-date": "2017-08-15"
+              },
+              "length": 384000,
+              "id": "da817948-e14e-4068-971e-61dc6946cd13",
+              "position": 1,
+              "number": "A1",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ]
+            },
+            {
+              "position": 2,
+              "id": "ff4e0243-2629-4c47-be75-713a50da5876",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ],
+              "number": "A2",
+              "recording": {
+                "id": "c5af5351-dbbf-4481-b52e-a480b6c57986",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "length": 330760,
+                "title": "Pain",
+                "first-release-date": "2017-08-04",
+                "video": false
+              },
+              "length": 331000,
+              "title": "Pain"
+            },
+            {
+              "number": "A3",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": ""
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "id": "c62e91bc-44e3-484f-891b-da5bdba2a769",
+              "position": 3,
+              "title": "Holding On",
+              "length": 351000,
+              "recording": {
+                "first-release-date": "2017-06-01",
+                "video": false,
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "length": 350893,
+                "title": "Holding On"
+              }
+            },
+            {
+              "title": "Strangest Thing",
+              "recording": {
+                "disambiguation": "",
+                "id": "3559bce2-59d4-4384-93f2-b91db8c7b605",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "length": 401013,
+                "title": "Strangest Thing",
+                "first-release-date": "2017-07-20",
+                "video": false
+              },
+              "length": 401000,
+              "position": 4,
+              "id": "0ef01623-ce61-4045-aa06-2f53bd31e308",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ],
+              "number": "B1"
+            },
+            {
+              "id": "a970d79b-457c-49a3-abd7-45d11092ad2f",
+              "position": 5,
+              "number": "B2",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  }
+                }
+              ],
+              "title": "Knocked Down",
+              "recording": {
+                "length": 239613,
+                "title": "Knocked Down",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    }
+                  }
+                ],
+                "disambiguation": "",
+                "id": "88ac7bf8-224e-4a3a-b03f-5a0444e0a460",
+                "first-release-date": "2017-08-25",
+                "video": false
+              },
+              "length": 240000
+            },
+            {
+              "length": 370000,
+              "recording": {
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "disambiguation": "",
+                "title": "Nothing to Find",
+                "length": 370000,
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "title": "Nothing to Find",
+              "number": "B3",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "id": "3b42012a-9aa2-48bd-8bff-bbe1b7696e51",
+              "position": 6
+            }
+          ],
+          "track-count": 6,
+          "discs": [],
+          "format": "12\" Vinyl",
+          "position": 2,
+          "id": "b9a3a49f-95d9-36c8-b3f0-411889b960fc",
+          "format-id": "3e9080b0-5e6c-34ab-bd15-f526b6306a64",
+          "title": "A Deeper Understanding, disc 1"
+        },
+        {
+          "format-id": "3e9080b0-5e6c-34ab-bd15-f526b6306a64",
+          "title": "A Deeper Understanding, disc 2",
+          "format": "12\" Vinyl",
+          "id": "ca2138e7-49ff-3f72-96ae-383ed7cecc35",
+          "position": 3,
+          "tracks": [
+            {
+              "title": "Thinking of a Place",
+              "length": 670000,
+              "recording": {
+                "length": 670666,
+                "title": "Thinking of a Place",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    }
+                  }
+                ],
+                "id": "1992efbf-d907-46c9-ad99-ad0ee2220758",
+                "disambiguation": "",
+                "first-release-date": "2017-04-28",
+                "video": false
+              },
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": ""
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "C1",
+              "id": "aeaf9874-62b0-4623-b088-c72507d89d8a",
+              "position": 1
+            },
+            {
+              "position": 2,
+              "id": "ba2b61fc-c32f-41d6-ac8c-b020886f0688",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "C2",
+              "title": "In Chains",
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "disambiguation": "",
+                "id": "576fa9c3-bd77-4230-8ee8-00933664a18f",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "title": "In Chains",
+                "length": 440733
+              },
+              "length": 441000
+            },
+            {
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "title": "Clean Living",
+                "length": 388520,
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "id": "0c9c6d62-67f0-47cd-a33c-9d6728704446",
+                "disambiguation": ""
+              },
+              "length": 388000,
+              "title": "Clean Living",
+              "position": 3,
+              "id": "122135c4-65ed-4300-b332-1171f83da9f8",
+              "number": "D1",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  }
+                }
+              ]
+            },
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "D2",
+              "position": 4,
+              "id": "a2150bcc-a753-432b-bad3-2178dccd9289",
+              "title": "You Don’t Have to Go",
+              "length": 403000,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "title": "You Don’t Have to Go",
+                "length": 402880,
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "id": "6a205fee-0e9f-4b6a-9a75-ce121a1fb21e",
+                "disambiguation": ""
+              }
+            }
+          ],
+          "track-count": 4,
+          "discs": [],
+          "track-offset": 0
+        },
+        {
+          "tracks": [
+            {
+              "title": "Holding On",
+              "recording": {
+                "disambiguation": "",
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                    }
+                  }
+                ],
+                "title": "Holding On",
+                "length": 350893,
+                "video": false,
+                "first-release-date": "2017-06-01"
+              },
+              "length": null,
+              "position": 1,
+              "id": "d25e975d-3c81-4451-82eb-b5fef97a8d31",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                  }
+                }
+              ],
+              "number": "A"
+            },
+            {
+              "number": "B",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                  }
+                }
+              ],
+              "position": 2,
+              "id": "8d9f4431-26c7-4596-9ee1-6c75efce0c36",
+              "title": "Nothing to Find",
+              "length": null,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "title": "Nothing to Find",
+                "length": 370000
+              }
+            }
+          ],
+          "discs": [],
+          "track-count": 2,
+          "track-offset": 0,
+          "format-id": "1d5a48e4-e94a-36dc-84e2-0c5f9f880aa7",
+          "title": "Bonus 7”",
+          "format": "7\" Vinyl",
+          "id": "b8bf1b4f-6043-3c2c-a761-711698f42158",
+          "position": 4
+        },
+        {
+          "tracks": [
+            {
+              "number": "A",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "position": 1,
+              "id": "270798e1-9608-4d38-82b4-f748e21a8ff6",
+              "title": "Thinking of a Place, Part 1",
+              "length": 308000,
+              "recording": {
+                "length": 308000,
+                "title": "Thinking of a Place, Part 1",
+                "disambiguation": "",
+                "id": "2af1efac-1b73-40c3-bc15-97393f6cd76e",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "first-release-date": "2017-04-22",
+                "video": false
+              }
+            },
+            {
+              "id": "a59ad98c-6574-4daf-8c01-cd51e789d771",
+              "position": 2,
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The"
+                  }
+                }
+              ],
+              "number": "B",
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-04-22",
+                "disambiguation": "",
+                "id": "c1951efe-01cc-460e-b560-2fd542009081",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "title": "Thinking of a Place, Part 2",
+                "length": 367000
+              },
+              "length": 367000,
+              "title": "Thinking of a Place, Part 2"
+            }
+          ],
+          "track-count": 2,
+          "discs": [],
+          "track-offset": 0,
+          "format-id": "3e9080b0-5e6c-34ab-bd15-f526b6306a64",
+          "title": "Thinking of a Place",
+          "format": "12\" Vinyl",
+          "position": 5,
+          "id": "de387eff-52ea-3eac-a855-f6a5805c21a3"
+        }
+      ],
+      "quality": "normal",
+      "artist-credit": [
+        {
+          "joinphrase": "",
+          "name": "The War on Drugs",
+          "artist": {
+            "country": "US",
+            "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+            "sort-name": "War on Drugs, The",
+            "disambiguation": "",
+            "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+            "name": "The War on Drugs",
+            "type": "Group"
+          }
+        }
+      ],
+      "packaging-id": "815b7785-8284-3926-8f04-e48bc6c4d102",
+      "disambiguation": "limited edition box set",
+      "asin": null,
+      "country": "US",
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "title": "A Deeper Understanding"
+    },
+    {
+      "cover-art-archive": {
+        "darkened": false,
+        "back": false,
+        "count": 1,
+        "front": true,
+        "artwork": true
+      },
+      "date": "2017-08-25",
+      "barcode": "075678660634",
+      "release-events": [
+        {
+          "date": "2017-08-25",
+          "area": {
+            "type": null,
+            "name": "United States",
+            "sort-name": "United States",
+            "type-id": null,
+            "disambiguation": "",
+            "id": "489ce91b-6658-3307-9877-795b68554c98",
+            "iso-3166-1-codes": [
+              "US"
+            ]
+          }
+        }
+      ],
+      "id": "5b54c0bf-ad51-4a9b-afcf-2beff375f1ce",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "packaging": "Digipak",
+      "quality": "normal",
+      "media": [
+        {
+          "position": 1,
+          "id": "1cb8dc4a-8072-32f3-9a11-934f173358da",
+          "format": "CD",
+          "title": "",
+          "format-id": "9712d52a-4509-3d4b-a1a2-67c88c643e31",
+          "track-offset": 0,
+          "discs": [
+            {
+              "offset-count": 10,
+              "sectors": 298513,
+              "offsets": [
+                150,
+                28881,
+                53688,
+                80005,
+                110081,
+                128052,
+                155803,
+                206103,
+                239158,
+                268297
+              ],
+              "id": "_GDJVYrAWd5Jcxqg32msRDz7aA4-"
+            }
+          ],
+          "track-count": 10,
+          "tracks": [
+            {
+              "title": "Up All Night",
+              "length": 383080,
+              "recording": {
+                "length": 383080,
+                "title": "Up All Night",
+                "id": "30b56510-51d4-4d24-a460-fa2b24782114",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "first-release-date": "2017-08-15",
+                "video": false
+              },
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "1",
+              "position": 1,
+              "id": "fc0de167-90d7-4ec8-b029-2164efca8d8f"
+            },
+            {
+              "id": "dcc9199c-d269-464e-8339-c0981ccc5909",
+              "position": 2,
+              "number": "2",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": ""
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-04",
+                "title": "Pain",
+                "length": 330760,
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                    }
+                  }
+                ],
+                "id": "c5af5351-dbbf-4481-b52e-a480b6c57986",
+                "disambiguation": ""
+              },
+              "length": 330760,
+              "title": "Pain"
+            },
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "3",
+              "position": 3,
+              "id": "cccecf2b-b031-435c-8658-ca77b115c002",
+              "title": "Holding On",
+              "length": 350893,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-06-01",
+                "disambiguation": "",
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The"
+                    }
+                  }
+                ],
+                "title": "Holding On",
+                "length": 350893
+              }
+            },
+            {
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-07-20",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The"
+                    }
+                  }
+                ],
+                "disambiguation": "",
+                "id": "3559bce2-59d4-4384-93f2-b91db8c7b605",
+                "title": "Strangest Thing",
+                "length": 401013
+              },
+              "length": 401013,
+              "title": "Strangest Thing",
+              "id": "464853eb-7445-491b-9e09-96ef8de8a510",
+              "position": 4,
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "4"
+            },
+            {
+              "title": "Knocked Down",
+              "length": 239613,
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "length": 239613,
+                "title": "Knocked Down",
+                "id": "88ac7bf8-224e-4a3a-b03f-5a0444e0a460",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                    }
+                  }
+                ]
+              },
+              "number": "5",
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "position": 5,
+              "id": "e3857b9e-465a-4dee-8806-634c1906a8b9"
+            },
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "6",
+              "position": 6,
+              "id": "1ccf0dfb-5d32-44bc-9a31-4c57f80caf72",
+              "length": 370013,
+              "recording": {
+                "title": "Nothing to Find",
+                "length": 370000,
+                "disambiguation": "",
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "title": "Nothing to Find"
+            },
+            {
+              "artist-credit": [
+                {
+                  "name": "The War on Drugs",
+                  "joinphrase": "",
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "number": "7",
+              "position": 7,
+              "id": "0a21a623-5189-435c-8399-de5647f88f74",
+              "length": 670666,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-04-28",
+                "disambiguation": "",
+                "id": "1992efbf-d907-46c9-ad99-ad0ee2220758",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "title": "Thinking of a Place",
+                "length": 670666
+              },
+              "title": "Thinking of a Place"
+            },
+            {
+              "position": 8,
+              "id": "513d76d8-165f-4822-bf5b-b70b3026767d",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "8",
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "disambiguation": "",
+                "id": "576fa9c3-bd77-4230-8ee8-00933664a18f",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "length": 440733,
+                "title": "In Chains"
+              },
+              "length": 440733,
+              "title": "In Chains"
+            },
+            {
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "title": "Clean Living",
+                "length": 388520,
+                "disambiguation": "",
+                "id": "0c9c6d62-67f0-47cd-a33c-9d6728704446",
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The"
+                    }
+                  }
+                ]
+              },
+              "length": 388520,
+              "title": "Clean Living",
+              "id": "503414d7-d533-400a-9e6c-9fc79eab79eb",
+              "position": 9,
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The"
+                  }
+                }
+              ],
+              "number": "9"
+            },
+            {
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "id": "6a205fee-0e9f-4b6a-9a75-ce121a1fb21e",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "length": 402880,
+                "title": "You Don’t Have to Go"
+              },
+              "length": 402880,
+              "title": "You Don’t Have to Go",
+              "position": 10,
+              "id": "bbd86db9-c6ff-45fa-950d-8b8cf698f8b1",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "10"
+            }
+          ]
+        }
+      ],
+      "artist-credit": [
+        {
+          "artist": {
+            "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+            "country": "US",
+            "sort-name": "War on Drugs, The",
+            "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+            "disambiguation": "",
+            "type": "Group",
+            "name": "The War on Drugs"
+          },
+          "joinphrase": "",
+          "name": "The War on Drugs"
+        }
+      ],
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "disambiguation": "",
+      "text-representation": {
+        "script": "Latn",
+        "language": "eng"
+      },
+      "title": "A Deeper Understanding",
+      "asin": "B071FL9473",
+      "country": "US"
+    },
+    {
+      "id": "87737feb-03bf-42c2-92fb-51f3b974f711",
+      "status": "Official",
+      "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+      "cover-art-archive": {
+        "back": false,
+        "count": 0,
+        "front": false,
+        "artwork": false,
+        "darkened": false
+      },
+      "date": "2017-08-25",
+      "release-events": [
+        {
+          "date": "2017-08-25",
+          "area": {
+            "type": null,
+            "name": "Australia",
+            "id": "106e0bec-b638-3b37-b731-f53d507dc00e",
+            "disambiguation": "",
+            "iso-3166-1-codes": [
+              "AU"
+            ],
+            "type-id": null,
+            "sort-name": "Australia"
+          }
+        }
+      ],
+      "barcode": "9397601008810",
+      "disambiguation": "",
+      "artist-credit": [
+        {
+          "artist": {
+            "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+            "country": "US",
+            "sort-name": "War on Drugs, The",
+            "disambiguation": "",
+            "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+            "name": "The War on Drugs",
+            "type": "Group"
+          },
+          "name": "The War on Drugs",
+          "joinphrase": ""
+        }
+      ],
+      "packaging-id": "8f931351-d2e2-310f-afc6-37b89ddba246",
+      "title": "A Deeper Understanding",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "asin": null,
+      "country": "AU",
+      "packaging": "Digipak",
+      "quality": "normal",
+      "media": [
+        {
+          "track-offset": 0,
+          "discs": [
+            {
+              "offset-count": 10,
+              "id": "_GDJVYrAWd5Jcxqg32msRDz7aA4-",
+              "offsets": [
+                150,
+                28881,
+                53688,
+                80005,
+                110081,
+                128052,
+                155803,
+                206103,
+                239158,
+                268297
+              ],
+              "sectors": 298513
+            }
+          ],
+          "track-count": 10,
+          "tracks": [
+            {
+              "id": "910ced82-8c2b-4458-92eb-54c4fe8a3dde",
+              "position": 1,
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "number": "1",
+              "recording": {
+                "title": "Up All Night",
+                "length": 383080,
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "name": "The War on Drugs",
+                      "type": "Group",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": ""
+                    }
+                  }
+                ],
+                "id": "30b56510-51d4-4d24-a460-fa2b24782114",
+                "disambiguation": "",
+                "video": false,
+                "first-release-date": "2017-08-15"
+              },
+              "length": 383080,
+              "title": "Up All Night"
+            },
+            {
+              "title": "Pain",
+              "length": 330760,
+              "recording": {
+                "first-release-date": "2017-08-04",
+                "video": false,
+                "length": 330760,
+                "title": "Pain",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "c5af5351-dbbf-4481-b52e-a480b6c57986"
+              },
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "2",
+              "position": 2,
+              "id": "c540d832-3a4c-4048-9464-5d3c54adbcfa"
+            },
+            {
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "number": "3",
+              "id": "27f29f3b-1f63-49d0-90bf-98515bc46852",
+              "position": 3,
+              "title": "Holding On",
+              "length": 350893,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-06-01",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "type": "Group",
+                      "name": "The War on Drugs",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "c236b3db-9233-4246-af8e-4a8357f0a313",
+                "title": "Holding On",
+                "length": 350893
+              }
+            },
+            {
+              "title": "Strangest Thing",
+              "length": 401013,
+              "recording": {
+                "id": "3559bce2-59d4-4384-93f2-b91db8c7b605",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "length": 401013,
+                "title": "Strangest Thing",
+                "first-release-date": "2017-07-20",
+                "video": false
+              },
+              "number": "4",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "position": 4,
+              "id": "cafbdcf6-9dec-47e3-8396-e4a458a1b2bb"
+            },
+            {
+              "recording": {
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "sort-name": "War on Drugs, The",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "joinphrase": "",
+                    "name": "The War on Drugs"
+                  }
+                ],
+                "disambiguation": "",
+                "id": "88ac7bf8-224e-4a3a-b03f-5a0444e0a460",
+                "title": "Knocked Down",
+                "length": 239613,
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "length": 239613,
+              "title": "Knocked Down",
+              "position": 5,
+              "id": "544b2373-3d43-472c-91a5-c6b3931d3811",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "name": "The War on Drugs",
+                    "type": "Group",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "sort-name": "War on Drugs, The",
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "number": "5"
+            },
+            {
+              "length": 370013,
+              "recording": {
+                "video": false,
+                "first-release-date": "2017-08-25",
+                "title": "Nothing to Find",
+                "length": 370000,
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "id": "6c362c43-90f6-4581-9489-461d6ab7b928",
+                "disambiguation": ""
+              },
+              "title": "Nothing to Find",
+              "number": "6",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "position": 6,
+              "id": "da063ccd-6e77-40df-9258-bb327f906689"
+            },
+            {
+              "length": 670666,
+              "recording": {
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "sort-name": "War on Drugs, The",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "disambiguation": "",
+                "id": "1992efbf-d907-46c9-ad99-ad0ee2220758",
+                "title": "Thinking of a Place",
+                "length": 670666,
+                "video": false,
+                "first-release-date": "2017-04-28"
+              },
+              "title": "Thinking of a Place",
+              "number": "7",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "type": "Group",
+                    "name": "The War on Drugs",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "sort-name": "War on Drugs, The",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US"
+                  },
+                  "joinphrase": "",
+                  "name": "The War on Drugs"
+                }
+              ],
+              "id": "cec3acb7-92dd-4fea-9c2f-55c1daea0ec0",
+              "position": 7
+            },
+            {
+              "length": 440733,
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "length": 440733,
+                "title": "In Chains",
+                "artist-credit": [
+                  {
+                    "artist": {
+                      "disambiguation": "",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "country": "US",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "sort-name": "War on Drugs, The",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    },
+                    "name": "The War on Drugs",
+                    "joinphrase": ""
+                  }
+                ],
+                "disambiguation": "",
+                "id": "576fa9c3-bd77-4230-8ee8-00933664a18f"
+              },
+              "title": "In Chains",
+              "number": "8",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ],
+              "id": "2cdb3cae-e864-4b3f-a73d-f310691daa9c",
+              "position": 8
+            },
+            {
+              "number": "9",
+              "artist-credit": [
+                {
+                  "joinphrase": "",
+                  "name": "The War on Drugs",
+                  "artist": {
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "country": "US",
+                    "sort-name": "War on Drugs, The",
+                    "disambiguation": "",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "name": "The War on Drugs",
+                    "type": "Group"
+                  }
+                }
+              ],
+              "id": "2060835b-ca85-4157-addc-4fbf57006a1f",
+              "position": 9,
+              "title": "Clean Living",
+              "length": 388520,
+              "recording": {
+                "first-release-date": "2017-08-25",
+                "video": false,
+                "artist-credit": [
+                  {
+                    "name": "The War on Drugs",
+                    "joinphrase": "",
+                    "artist": {
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "name": "The War on Drugs",
+                      "type": "Group"
+                    }
+                  }
+                ],
+                "id": "0c9c6d62-67f0-47cd-a33c-9d6728704446",
+                "disambiguation": "",
+                "length": 388520,
+                "title": "Clean Living"
+              }
+            },
+            {
+              "recording": {
+                "title": "You Don’t Have to Go",
+                "length": 402880,
+                "id": "6a205fee-0e9f-4b6a-9a75-ce121a1fb21e",
+                "disambiguation": "",
+                "artist-credit": [
+                  {
+                    "joinphrase": "",
+                    "name": "The War on Drugs",
+                    "artist": {
+                      "sort-name": "War on Drugs, The",
+                      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                      "country": "US",
+                      "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                      "disambiguation": "",
+                      "type": "Group",
+                      "name": "The War on Drugs"
+                    }
+                  }
+                ],
+                "video": false,
+                "first-release-date": "2017-08-25"
+              },
+              "length": 402880,
+              "title": "You Don’t Have to Go",
+              "position": 10,
+              "id": "11d4e142-397b-4616-9b9b-ca5480688d8a",
+              "number": "10",
+              "artist-credit": [
+                {
+                  "artist": {
+                    "country": "US",
+                    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+                    "sort-name": "War on Drugs, The",
+                    "id": "87b9b3b8-ab93-426c-a200-4012d667a626",
+                    "disambiguation": "",
+                    "type": "Group",
+                    "name": "The War on Drugs"
+                  },
+                  "name": "The War on Drugs",
+                  "joinphrase": ""
+                }
+              ]
+            }
+          ],
+          "position": 1,
+          "id": "b09e2c99-b330-377a-9f9f-77448a4f9d33",
+          "format": "CD",
+          "title": "",
+          "format-id": "9712d52a-4509-3d4b-a1a2-67c88c643e31"
+        }
+      ]
+    }
+  ]
+}

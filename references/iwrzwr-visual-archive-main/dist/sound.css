@@ -1,0 +1,9 @@
+/* Sound controls. Nothing here applies while sound is off. */
+.archive-intro p.archive-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:0}
+.sound-toggle{display:inline-flex;align-items:center;justify-content:center;background:transparent;color:var(--ink);padding:8px 16px;border-radius:100px;font:inherit;font-size:15px;line-height:20px;white-space:nowrap;cursor:pointer}
+.sound-toggle[aria-pressed="true"]{background:rgb(255 255 255 / 8%)}
+.sound-status{color:var(--muted);font-size:15px;line-height:20px;min-height:20px}
+.sound-toggle:focus-visible{outline:1px solid var(--ink);outline-offset:4px}
+.sound-toggle[hidden]{display:none!important}
+.header-actions{display:flex;align-items:center;gap:12px;flex-shrink:0}
+@media(max-width:620px){body>header{flex-wrap:wrap}.header-actions{margin-left:auto}}

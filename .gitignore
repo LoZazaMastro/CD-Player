@@ -1,0 +1,8 @@
+/.deps/
+/build/
+/dist/
+.env
+*.tmp
+__pycache__/
+*.pyc
+.DS_Store

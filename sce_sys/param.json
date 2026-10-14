@@ -1,0 +1,34 @@
+{
+  "ageLevel": {
+    "default": 0
+  },
+  "applicationCategoryType": 65536,
+  "applicationDrmType": "free",
+  "attribute": 0,
+  "attribute2": 0,
+  "attribute3": 0,
+  "conceptId": "98427",
+  "contentBadgeType": 2,
+  "contentId": "UP9000-PPSA98427_00-CDPLAYER00000001",
+  "contentVersion": "01.000.001",
+  "downloadDataSize": 16384,
+  "localizedParameters": {
+    "defaultLanguage": "it-IT",
+    "it-IT": {
+      "titleName": "CD Player"
+    },
+    "en-US": {
+      "titleName": "CD Player"
+    }
+  },
+  "masterVersion": "01.00",
+  "pubtools": {
+    "creationDate": "2026-08-22 00:00:00",
+    "loudnessSnd0": "-28.00",
+    "toolVersion": "2.00"
+  },
+  "requiredSystemSoftwareVersion": "0x0000000000000000",
+  "sdkVersion": "0x0000000000000000",
+  "titleId": "PPSA98427",
+  "versionFileUri": ""
+}

@@ -1,0 +1,192 @@
+// CD Player - Transport, metadata and signal regressions.
+// Copyright (C) 2026 Andrea
+// SPDX-License-Identifier: GPL-3.0-or-later
+#include "cd/disc.hpp"
+#include "cd/sound.hpp"
+#include "cd/dsp.hpp"
+#include <cassert>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <fstream>
+#include <numbers>
+#include <random>
+
+int main()
+{
+    unsigned checks = 0;
+    auto check = [&](bool value)
+    {
+        ++checks;
+        if (!value)
+        {
+            std::fprintf(stderr, "Check %u failed\n", checks);
+            std::abort();
+        }
+    };
+    const std::string abc = "abc";
+    const auto hash = cd::sha1({reinterpret_cast<const uint8_t *>(abc.data()), abc.size()});
+    const std::array<uint8_t, 20> sha_expected = {0xa9, 0x99, 0x3e, 0x36, 0x47, 0x06, 0x81,
+                                                  0x6a, 0xba, 0x3e, 0x25, 0x71, 0x78, 0x50,
+                                                  0xc2, 0x6c, 0x9c, 0xd0, 0xd8, 0x9d};
+    check(hash == sha_expected);
+    cd::Disc disc;
+    disc.first = 1;
+    disc.last = 10;
+    disc.leadout = 298363;
+    const unsigned starts[] = {0,      28731,  53538,  79855,  109931,
+                               127902, 155653, 205953, 239008, 268147};
+    for (unsigned i = 0; i < 10; ++i)
+    {
+        cd::Track t;
+        t.number = i + 1;
+        t.start = starts[i];
+        t.end = i < 9 ? starts[i + 1] : disc.leadout;
+        disc.tracks.push_back(t);
+    }
+    check(cd::disc_id(disc) == "_GDJVYrAWd5Jcxqg32msRDz7aA4-");
+    disc.id = cd::disc_id(disc);
+    std::ifstream f("tests/fixtures/reference-disc.musicbrainz.json");
+    std::string metadata((std::istreambuf_iterator<char>(f)), {});
+    const auto releases = cd::parse_releases(metadata, disc);
+    check(releases.size() == 4);
+    check(cd::apply_release(releases[0], disc));
+    check(disc.album == "A Deeper Understanding");
+    check(disc.year == "2017");
+    check(disc.artist == "The War on Drugs");
+    check(!cd::parse_releases("[]", disc).size());
+    check(!cd::parse_releases("{", disc).size());
+    auto wrong = releases[0];
+    wrong.tracks[1].number = 99;
+    check(!cd::apply_release(wrong, disc));
+    auto cdb = cd::read_audio(0x12345678, 20);
+    check(cdb.length == 12 && cdb.bytes[0] == 0xbe && cdb.bytes[1] == 4 && cdb.bytes[5] == 0x78 &&
+          cdb.bytes[8] == 20 && cdb.bytes[9] == 0x10 && cdb.allocation == 47040);
+    check(cd::apple_wake().bytes[6] == 1 && cd::apple_wake().length == 7);
+    check(cd::eject().bytes[4] == 2);
+    check(cd::unlock().bytes[0] == 0x1e);
+    std::vector<uint8_t> toc(92);
+    toc[1] = 90;
+    toc[2] = 1;
+    toc[3] = 10;
+    for (unsigned i = 0; i < 11; ++i)
+    {
+        const unsigned at = 4 + i * 8, lba = i < 10 ? starts[i] : 298363;
+        toc[at + 1] = 0x10;
+        toc[at + 2] = uint8_t(i < 10 ? i + 1 : 170);
+        for (unsigned b = 0; b < 4; ++b)
+            toc[at + 4 + b] = uint8_t(lba >> (24 - b * 8));
+    }
+    cd::Disc parsed;
+    std::string error;
+    check(cd::parse_toc(toc, parsed, error));
+    check(parsed.id == disc.id);
+    auto invalid = toc;
+    invalid[14] = 3;
+    check(!cd::parse_toc(invalid, parsed, error));
+    for (size_t length = 0; length < toc.size(); ++length)
+        check(!cd::parse_toc(std::span(toc).first(length), parsed, error));
+    std::mt19937 random(773);
+    for (unsigned n = 0; n < 3000; ++n)
+    {
+        std::vector<uint8_t> bytes(random() % 1200);
+        for (auto &b : bytes)
+            b = uint8_t(random());
+        cd::parse_toc(bytes, parsed, error);
+        cd::parse_cdtext(bytes, parsed);
+    }
+    std::vector<uint8_t> pcm(44100 * 4);
+    for (unsigned i = 0; i < 44100; ++i)
+    {
+        const int16_t sample = int16_t(std::sin(2. * std::numbers::pi * 1000 * i / 44100) * 12000);
+        pcm[i * 4] = pcm[i * 4 + 2] = uint8_t(sample);
+        pcm[i * 4 + 1] = pcm[i * 4 + 3] = uint8_t(uint16_t(sample) >> 8);
+    }
+    cd::Resampler all, split;
+    all.reset();
+    split.reset();
+    const auto a = all.push(pcm, true);
+    std::vector<float> b;
+    for (size_t at = 0; at < pcm.size();)
+    {
+        const size_t count = std::min(size_t(588 * 4), pcm.size() - at);
+        auto block = split.push(std::span(pcm).subspan(at, count), at + count == pcm.size());
+        b.insert(b.end(), block.begin(), block.end());
+        at += count;
+    }
+    check(a.size() == 96000);
+    check(a.size() == b.size());
+    float difference = 0;
+    for (size_t i = 0; i < a.size(); ++i)
+        difference = std::max(difference, std::abs(a[i] - b[i]));
+    check(difference < 1e-6f);
+    double rms = 0;
+    for (size_t i = 128; i < 47000; ++i)
+        rms += double(a[i * 2]) * a[i * 2];
+    rms = std::sqrt(rms / (47000 - 128));
+    check(std::abs(rms - 12000. / 32768 / std::sqrt(2.)) < .001);
+    cd::AudioRing ring;
+    check(ring.write(std::span(a).first(1024), 1, 100));
+    cd::AudioFrame frame;
+    check(!ring.read(frame, 1, false));
+    check(ring.available() == 512);
+    check(ring.read(frame, 1, true));
+    check(frame.position == 100);
+    check(!ring.read(frame, 2, false));
+    check(ring.available() == 0);
+    check(ring.write(std::span(a).first(1024), 2, 200));
+    check(ring.read(frame, 2, true));
+    check(frame.position == 200);
+    cd::Dsp dsp;
+    std::vector<int16_t> stereo(1024), out(4096);
+    for (auto &sample : stereo)
+        sample = int16_t(random());
+    dsp.process(stereo, out, 8);
+    for (unsigned i = 0; i < 512; ++i)
+    {
+        check(out[i * 8] == stereo[i * 2] && out[i * 8 + 1] == stereo[i * 2 + 1]);
+        for (unsigned c = 2; c < 8; ++c)
+            check(out[i * 8 + c] == 0);
+    }
+    dsp.equalizer(true);
+    dsp.band(5, 6);
+    for (size_t i = 0; i < 512; ++i)
+        stereo[i * 2] = stereo[i * 2 + 1] =
+            int16_t(3000 * std::sin(2. * std::numbers::pi * 1000 * i / 48000));
+    for (unsigned n = 0; n < 100; ++n)
+        dsp.process(stereo, out, 8);
+    double input_energy = 0, output_energy = 0;
+    for (size_t i = 0; i < 512; ++i)
+    {
+        input_energy += double(stereo[i * 2]) * stereo[i * 2];
+        output_energy += double(out[i * 8]) * out[i * 8];
+    }
+    check(std::sqrt(output_energy / input_energy) > 1.8 &&
+          std::sqrt(output_energy / input_energy) < 2.2);
+    dsp.upmix(false);
+    dsp.equalizer(false);
+    for (unsigned n = 0; n < 20; ++n)
+        dsp.process(stereo, out, 8);
+    for (unsigned i = 0; i < 512; ++i)
+        check(out[i * 8] == stereo[i * 2] && out[i * 8 + 1] == stereo[i * 2 + 1]);
+    cd::Dsp matrix;
+    matrix.upmix(true);
+    std::vector<int16_t> silence(1024), channels_out(4096);
+    for (unsigned i = 0; i < 20; ++i)
+        matrix.process(silence, channels_out, 8);
+    std::vector<int16_t> impulse(4096), surround(16384);
+    impulse[0] = 12000;
+    matrix.process(impulse, surround, 8);
+    check(surround[0] == 9600);
+    check(surround[2] > 0 && surround[3] > 0);
+    check(surround[720 * 8 + 6] > 0 && surround[720 * 8 + 7] < 0);
+    check(surround[1200 * 8 + 4] > 0 && surround[1200 * 8 + 5] < 0);
+    cd::Analyzer analyzer;
+    for (unsigned i = 0; i < 2048; ++i)
+        analyzer.feed(std::sin(2.f * std::numbers::pi_v<float> * 1000 * i / 48000), 0);
+    auto bands = analyzer.bands();
+    check(*std::max_element(bands.begin(), bands.end()) > .1f);
+    std::printf("%u checks passed; 3000 malformed TOC/CD-Text cases; chunk-invariant resampling; "
+                "EQ/upmix transitions\n",
+                checks);
+}
