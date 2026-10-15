@@ -257,6 +257,16 @@ int main()
     capture("visualizer-signal-assembly");
     screen.handle(change, feedback, simulated_player, dsp);
     capture("visualizer-phase-mechanics");
+    snapshot.visualization=14;
+    for(int frame=0;frame<100;++frame){screen.update(1.f/60,snapshot,dsp);screen.draw(snapshot,analyzer.bands(),dsp,"21:30",1920,1080,target.framebuffer(),analyzer.waveform());}
+    capture("visualizer-terminal");
+    snapshot.oled_visualizer=true;
+    for(int frame=0;frame<180;++frame)screen.update(1.f/60,snapshot,dsp);
+    capture("visualizer-oled");
+    snapshot.playing=false;
+    for(int frame=0;frame<3601;++frame)screen.update(1.f/60,snapshot,dsp);
+    capture("visualizer-oled-black");
+    snapshot.playing=true;snapshot.oled_visualizer=false;snapshot.visualization=17;
     screen.preview_fullscreen(false);
     screen.preview_preferences(true);
     for (int i = 0; i < 60; ++i)

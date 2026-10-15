@@ -43,7 +43,9 @@ void mark(DrawList &out, float y, float x, float v, float alpha, float hot = 0)
 void Visualizer::update(const std::array<float, 32> &bands, float dt, bool playing,
                         bool reduced_motion)
 {
-    dt = std::clamp(dt, 0.f, .05f);
+    dt = std::isfinite(dt) ? std::clamp(dt, 0.f, .25f) : 0;
+    if (playing && !reduced_motion)
+        archive_time_ += dt;
     for (unsigned i=0;i<bands.size();++i)
         bands_[i]=playing && std::isfinite(bands[i])?std::clamp(bands[i],0.f,1.f):0;
     Signal target;
@@ -307,7 +309,7 @@ void Visualizer::draw(DrawList &out, int selection, bool particles, const hui::u
 {
     if(selection<=int(archive_entries.size()))
     {
-        archive_.draw(out,unsigned(selection),motion_,signal_.low,signal_.mid,signal_.high,signal_.level,beat_,hit_age_,snare_age_,bands_,fonts);
+        archive_.draw(out,unsigned(selection),archive_time_,signal_.low,signal_.mid,signal_.high,signal_.level,beat_,hit_age_,snare_age_,bands_,fonts);
     }
     else {
         const int item=selection-int(archive_entries.size())-1,family=item/3,study=item%3;

@@ -52,7 +52,7 @@ class Canvas {
   constructor(canvas){this.canvas=canvas;this.globalAlpha=1;this.fillStyle='#fff';this.strokeStyle='#fff';this.lineWidth=1;this.lineCap='butt';this.font='10px sans-serif';this.textAlign='left';this.textBaseline='alphabetic';this.matrix=[1,0,0,1,0,0];this.clipping=[0,0,412,44];this.stack=[];this.path=[];this.paths=[];}
   point(x,y){let m=this.matrix;return [m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];}
   emit(op,data,style=this.fillStyle){if(this.canvas!==__selected)return;let [rgb,alpha]=color(style);if(alpha*this.globalAlpha<=0)return;__paint(op,data,rgb,alpha*this.globalAlpha,this.lineWidth,this.clipping);}
-  save(){this.stack.push({matrix:[...this.matrix],clipping:[...this.clipping],globalAlpha:this.globalAlpha,fillStyle:this.fillStyle,strokeStyle:this.strokeStyle,lineWidth:this.lineWidth});}
+  save(){this.stack.push({matrix:[...this.matrix],clipping:[...this.clipping],globalAlpha:this.globalAlpha,fillStyle:this.fillStyle,strokeStyle:this.strokeStyle,lineWidth:this.lineWidth,font:this.font,textAlign:this.textAlign,textBaseline:this.textBaseline});}
   restore(){if(this.stack.length)Object.assign(this,this.stack.pop());}
   setTransform(a,b,c,d,e,f){this.matrix=[a,b,c,d,e,f];}
   resetTransform(){this.setTransform(1,0,0,1,0,0);}
@@ -78,7 +78,7 @@ class Canvas {
   quadraticCurveTo(x1,y1,x2,y2){let p=this.path.at(-1)||[0,0],a=this.point(x1,y1),b=this.point(x2,y2);for(let i=1;i<=16;i++){let t=i/16,u=1-t;this.path.push([u*u*p[0]+2*u*t*a[0]+t*t*b[0],u*u*p[1]+2*u*t*a[1]+t*t*b[1]]);}}
   setLineDash(){}
   createLinearGradient(x1,y1,x2,y2){return {start:this.point(x1,y1),end:this.point(x2,y2),stops:[],addColorStop(p,c){this.stops.push([p,c]);this.stops.sort((a,b)=>a[0]-b[0]);}};}
-  fillText(text,x,y){this.emit(3,[String(text),...this.point(x,y),parseFloat(this.font)||10,this.textAlign]);}
+  fillText(text,x,y){this.emit(3,[String(text),...this.point(x,y),parseFloat(this.font)||10,this.textAlign,this.textBaseline]);}
   measureText(text){return {width:String(text).length*(parseFloat(this.font)||10)*.6};}
 }
 globalThis.__mount=function(program,index){
@@ -86,7 +86,9 @@ globalThis.__mount=function(program,index){
   let body=nodes[0];globalThis.document={body,head:new Element({tag:'head',attrs:{}}),hidden:false,querySelector:body.querySelector.bind(body),querySelectorAll:body.querySelectorAll.bind(body),getElementById:id=>nodes.find(n=>n.id===id)||null,addEventListener(){},removeEventListener(){},createElement:tag=>new Element({tag,attrs:{}})};
   let buttons=document.querySelectorAll('button[data-style]'),canvases=document.querySelectorAll('canvas');
   __selected=canvases[buttons.length?0:index]||canvases[0];
-  for(let source of program.scripts)(0,eval)(source);
+  // The gallery throttles its embedded previews. Native playback follows the
+  // display's requestAnimationFrame instead, without changing the drawing code.
+  for(let source of program.scripts)(0,eval)(source.replace(/>=\s*1000\s*\/\s*(?:30|60)(?:\s*-\s*1)?/g,'>0'));
   canvases=document.querySelectorAll('canvas');__selected=canvases[buttons.length?0:index]||canvases[0];
   if(buttons.length)buttons[index]?.click();
   for(let resize of __resize)resize();__resize=[];
@@ -98,4 +100,24 @@ globalThis.__tick=function(ms,signal){
   globalThis.__now=ms;globalThis.iwrSignal=signal;
   __signalHistory.push({t:ms,s:signal});if(__signalHistory.length>480)__signalHistory.shift();
   let callbacks=[...__raf.values()];__raf.clear();for(let fn of callbacks)fn(ms);
+};
+
+// Shared samples and a compiled entry point: C++ updates the buffer and calls
+// this function, rather than compiling a generated script every display frame.
+const __bands=new Float32Array(__audioSamples,0,32);
+const __wave=new Float32Array(__audioSamples,32*4,256);
+const __signalMethods={
+  bandAt(b,age=0){return __past(b==='amp'?'level':b,age,this);},
+  eventAt(k,age=0){let s=__pastSignal(age,this);return {n:s.beat,age:(s[k+'Age']??30)+age};},
+  spectrumAt(x){return __bands[Math.min(31,Math.max(0,Math.floor(x*31)))];},
+  levelAt(age=0){return __past('level',age,this);},
+  hitAt(age=0){return __past('hit',age,this);},
+  sampleAt(age=0){return __wave[Math.max(0,Math.min(255,255-Math.floor(age*48000/4)))];}
+};
+globalThis.__nativeFrame=function(ms,low,mid,high,level,beat,kickAge,snareAge){
+  const signal=Object.assign(Object.create(__signalMethods),{
+    active:true,source:'cd',mode:'play',low,mid,high,level,amp:level,
+    hit:Math.exp(-kickAge*9),beat,kickAge,snareAge,hatAge:snareAge,songTime:ms/1000
+  });
+  __tick(ms,signal);
 };

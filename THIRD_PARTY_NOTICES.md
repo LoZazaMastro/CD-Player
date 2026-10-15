@@ -19,6 +19,8 @@ CD Player is a native PS5 application, independently identified as PPSA98427.
   The native adapter renders their canvas commands through ps5-homebrew-ui.
 - Doto by Oliver Lalan is the UI typeface (SIL Open Font License 1.1).
   Inter provides fallback glyphs (SIL Open Font License 1.1).
+  DejaVu Sans Mono renders the visualizers' terminal and box-drawing symbols;
+  its Bitstream Vera license and DejaVu notices accompany the font.
 - SuperDrive initialization follows the protocol documented by Alfredo Sandoval
   (MIT). No Apple Boot Camp driver binaries are included.
 - The exact-title Lapy helper is based on upstream commit
@@ -38,7 +40,7 @@ CD Player is a native PS5 application, independently identified as PPSA98427.
   No album artwork or PCM recordings from the owner's test CD are bundled.
 
 The following notices are retained from the original UI toolkit source.
-CD Player packages only Doto and Inter; the other demo fonts named below are
+CD Player packages Doto, Inter and DejaVu Sans Mono; the other demo fonts named below are
 not included in its application folder. The app uses its own minimal digital styling and presentation assets.
 
 ## Credits and acknowledgements

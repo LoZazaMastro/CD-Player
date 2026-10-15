@@ -35,11 +35,12 @@ shutil.copy2(ROOT / 'THIRD_PARTY_NOTICES.md', APP / 'THIRD_PARTY_NOTICES.md')
 shutil.copy2(ROOT / 'README.txt', APP / 'README.txt')
 # The demo font collection is not needed by CD Player; retain Doto and its fallback.
 for name in ('dejavu-sans-mono.huifont', 'montserrat-medium.huifont', 'patrick-hand.huifont', 'press-start-2p.huifont',
-             'DejaVu-LICENSE.txt', 'Montserrat-LICENSE.txt', 'PatrickHand-LICENSE.txt', 'PressStart2P-LICENSE.txt'):
+             'Montserrat-LICENSE.txt', 'PatrickHand-LICENSE.txt', 'PressStart2P-LICENSE.txt'):
     (APP / 'assets/fonts' / name).unlink(missing_ok=True)
 required = ['eboot.bin', 'sce_module/libc.prx', 'sce_sys/param.json', 'sce_sys/icon0.png', 'sce_sys/pic0.dds', 'sce_sys/pic1.dds',
             'lapy.elf', 'lapy-manifest.json', 'assets/fonts/doto-semibold.huifont', 'assets/fonts/inter-regular.huifont',
-            'assets/fonts/inter-semibold.huifont', 'assets/fonts/Doto-OFL.txt', 'licenses/PSSwanStation-ADDITIONAL-TERMS.txt']
+            'assets/fonts/inter-semibold.huifont', 'assets/fonts/visualizer-mono.huifont',
+            'assets/fonts/DejaVu-LICENSE.txt', 'assets/fonts/Doto-OFL.txt', 'licenses/PSSwanStation-ADDITIONAL-TERMS.txt']
 required += ['assets/disc/engraving.png', 'licenses/curl-LICENSE.txt', 'licenses/OpenSSL-LICENSE.txt',
              'licenses/libpsl-LICENSE.txt', 'licenses/zstd-LICENSE.txt']
 for name in required:

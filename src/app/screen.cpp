@@ -7,6 +7,7 @@
 #include "app/screen.hpp"
 
 #include "app/dot_icons.hpp"
+#include "app/visualizer_presentation.hpp"
 
 #include "core/save_file.hpp"
 
@@ -85,7 +86,8 @@ bool Screen::init(const std::string &assets)
         return false;
     doto_.add_fallback(&regular_, fonts_.regular.texture);
     fonts_.regular=fonts_.display;fonts_.semibold=fonts_.display;
-    fonts_.mono = fonts_.regular;
+    if (!load_font(assets + "/fonts/visualizer-mono.huifont", visual_mono_, fonts_.mono))
+        return false;
     fonts_.pixel = fonts_.regular;
     fonts_.hand = fonts_.regular;
 
@@ -208,6 +210,8 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
         preferences_.add_toggle(3, "Reduced motion", reduced_motion_);
         preferences_.add_choice(4, "Visualizer", Visualizer::names(), visual_ - 1);
         preferences_.add_toggle(7, "Shuffle visualizers", snapshot.visual_rotation);
+        preferences_.add_toggle(11, "OLED mode", snapshot.oled_visualizer).description =
+            "Hide labels, gently move effects, and show a black screen after one minute paused";
         preferences_.add_header("Album");
         if (snapshot.editions.size() > 1)
         {
@@ -232,13 +236,14 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
     preferences_.set_toggle(7, snapshot.visual_rotation);
     preferences_.set_toggle(8, snapshot.autoplay);
     preferences_.set_toggle(10, snapshot.show_eject_button);
+    preferences_.set_toggle(11, snapshot.oled_visualizer);
     preferences_.set_slider(5, snapshot.volume * 100);
     preferences_.set_active(true);
 }
 void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
 {
-    dt = std::clamp(dt, 0.f, .05f);
-    last_dt_ = dt;
+    last_dt_ = std::isfinite(dt) ? std::clamp(dt, 0.f, .25f) : 0;
+    dt = std::min(last_dt_, .05f);
     settings_amount_.target = settings_ ? 1.f : 0.f;
     if (reduced_motion_)
         settings_amount_.snap(settings_amount_.target);
@@ -246,8 +251,8 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
         settings_amount_.update(dt, 16);
     for (size_t i = 0; i < 10; ++i)
         eq_positions_[i] += (dsp.band(i) - eq_positions_[i]) * (1 - std::exp(-dt * 22));
-    time_ += dt;
-    idle_ += dt;
+    time_ += last_dt_;
+    idle_ += last_dt_;
     if (show_eject_button_ != snapshot.show_eject_button)
     {
         show_eject_button_ = snapshot.show_eject_button;
@@ -298,6 +303,7 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
         if (snapshot.disc.id != shown_id_)
         {
             shown_id_ = snapshot.disc.id;
+            observed_track_ = 0;
             tracks_.set_focus(0);
         }
 
@@ -319,6 +325,19 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
         const int focus = tracks_.focus();
         tracks_.set_items(std::move(items));
         tracks_.set_focus(focus, false);
+    }
+
+    // Follow track transitions once; never pull the list back while the user browses.
+    if (snapshot.track != observed_track_)
+    {
+        observed_track_ = snapshot.track;
+        if (snapshot.state == State::ready && snapshot.track != 0)
+            for (size_t i = 0; i < snapshot.disc.tracks.size(); ++i)
+                if (snapshot.disc.tracks[i].number == snapshot.track)
+                {
+                    tracks_.reveal_item(int(i), snapshot.reduced_motion);
+                    break;
+                }
     }
 
     if (snapshot.cover_revision != cover_revision_)
@@ -530,6 +549,8 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
                 player.autoplay(form.toggle_value(8));
             if (id == 10)
                 player.show_eject_button(form.toggle_value(10));
+            if (id == 11)
+                player.oled_visualizer(form.toggle_value(11));
         }
 
         return;
@@ -701,8 +722,15 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
     }
     else if (full_)
     {
-        visualizer_.draw(page_, visual_, !reduced_motion_, fonts_);
-        const float hint_opacity = std::clamp((2.f - idle_) / .25f, 0.f, 1.f);
+        const auto presentation = VisualizerPresentation::sample(
+            snapshot.oled_visualizer, idle_, time_, snapshot.playing);
+        if (!presentation.blank)
+        {
+            page_.push_transform(1, 0, 0, presentation.x, presentation.y);
+            visualizer_.draw(page_, visual_, !reduced_motion_, fonts_);
+            page_.pop_transform();
+        }
+        const float hint_opacity = presentation.hints;
         if (hint_opacity > 0)
         {
             page_.push_opacity(hint_opacity);
@@ -719,13 +747,16 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
                 artist = t.artist;
             }
 
-        ui::text(page_, fonts_.display, doto_.fit(title, 48, 1400), 96, 910, 48, ink);
-
-        ui::text(page_, fonts_.regular,
-                 doto_.fit(artist + " · " + snapshot.disc.album, 28, 1400), 98, 961, 28, muted);
-
-        ui::text(page_, fonts_.display, clock, 1824, centered_baseline(doto_, clock, 64.5f, 98),
-                 64.5f, ink, gfx::Align::right);
+        if (presentation.labels > 0)
+        {
+            page_.push_opacity(presentation.labels);
+            ui::text(page_, fonts_.display, doto_.fit(title, 48, 1400), 96, 910, 48, ink);
+            ui::text(page_, fonts_.regular,
+                     doto_.fit(artist + " · " + snapshot.disc.album, 28, 1400), 98, 961, 28, muted);
+            ui::text(page_, fonts_.display, clock, 1824,
+                     centered_baseline(doto_, clock, 64.5f, 98), 64.5f, ink, gfx::Align::right);
+            page_.pop_opacity();
+        }
 
         ui::Hint hints[] = {{ui::Button::circle, "Back"},
                             {ui::Button::cross, "Play / pause"},
@@ -831,13 +862,13 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
             ui::text(page_, fonts_.regular, "Tracks will appear here", 940, 487, 25, muted);
         }
 
-        ui::Hint hints[] = {{ui::Button::cross, cover_focus_ ? "Album" : "Track"},
-                            {ui::Button::square, "Pause"},
-                            {ui::Button::triangle, "Eject"},
-
-                            {ui::Button::l1, "Track", ui::Button::r1},
-                            {ui::Button::l2, "10 sec", ui::Button::r2},
-                            {ui::Button::options, "Settings"}};
+        std::vector<ui::Hint> hints = {{ui::Button::cross, cover_focus_ ? "Album" : "Track"},
+                                      {ui::Button::square, "Pause"}};
+        if (snapshot.show_eject_button)
+            hints.push_back({ui::Button::triangle, "Eject"});
+        hints.push_back({ui::Button::l1, "Track", ui::Button::r1});
+        hints.push_back({ui::Button::l2, "10 sec", ui::Button::r2});
+        hints.push_back({ui::Button::options, "Settings"});
 
         ui::HintLayout layout;
         layout.size = 32;
@@ -845,7 +876,7 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         layout.cy = 1025;
         layout.item_gap = 32;
 
-        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 6, 96, false, layout);
+        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints.data(), int(hints.size()), 96, false, layout);
     }
 
     renderer_.begin();

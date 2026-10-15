@@ -18,12 +18,13 @@ namespace cd
 {
 class Screen
 {
+    friend struct ScreenInspection;
     hui::gfx::Renderer renderer_;
     Scene scene_;
     Visualizer visualizer_;
     MediaMotion media_motion_;
     Spindle spindle_;
-    hui::gfx::Font regular_, semibold_, doto_;
+    hui::gfx::Font regular_, semibold_, doto_, visual_mono_;
     hui::ui::Fonts fonts_;
     hui::ui::Theme theme_;
     hui::ui::ListView tracks_;
@@ -43,6 +44,7 @@ class Screen
     bool cover_focus_ = false, album_panel_ = false, album_available_ = false;
     float album_scroll_ = 0, album_scroll_max_ = 0;
     unsigned audio_channels_ = 8, playing_track_ = 0;
+    unsigned observed_track_ = 0;
     bool equalizer_page_ = false;
     int eq_focus_ = 0;
     std::array<float, 10> eq_positions_{};

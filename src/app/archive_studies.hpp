@@ -20,5 +20,7 @@ public:
               float level, unsigned beat, float kick_age, float snare_age,
               const std::array<float,32> &, const hui::ui::Fonts &);
     const std::string &error() const;
+    uint64_t redraws() const;
+    unsigned missing_glyphs() const;
 };
 }

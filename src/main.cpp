@@ -82,6 +82,7 @@ int main()
     int64_t measurement_start = previous;
     unsigned rendered_frames = 0;
     int64_t longest_frame = 0;
+    int64_t longest_draw = 0;
     for (;;)
     {
         const int64_t now = hui::sys::monotonic_us();
@@ -97,7 +98,9 @@ int main()
             sounds.play(mixer, hui::audio::SoundSet::glass, cue);
         const auto state = player.snapshot();
         screen.update(dt, state, dsp);
+        const int64_t draw_start = hui::sys::monotonic_us();
         screen.draw(state, player.spectrum(), dsp, clock_text(), display.width(), display.height(),0,player.waveform());
+        longest_draw = std::max(longest_draw, hui::sys::monotonic_us()-draw_start);
         if (!display.swap())
             break;
         if (splash)
@@ -116,12 +119,14 @@ int main()
         if (now - measurement_start >= 10000000)
         {
             hui::sys::log("[CD] rendering %.2f fps; longest frame %.2f ms; output %d Hz; audio "
-                          "underruns %llu",
+                          "underruns %llu; draw max %.2f ms; visualizer %u; OLED %d",
                           double(rendered_frames) * 1000000 / double(now - measurement_start),
                           double(longest_frame) / 1000, display.refresh(),
-                          (unsigned long long)state.underruns);
+                          (unsigned long long)state.underruns, double(longest_draw)/1000,
+                          state.visualization, state.oled_visualizer);
             rendered_frames = 0;
             longest_frame = 0;
+            longest_draw = 0;
             measurement_start = now;
             std::fflush(stdout);
         }

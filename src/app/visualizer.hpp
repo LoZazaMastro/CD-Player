@@ -19,6 +19,7 @@ class Visualizer
     Signal signal_{};
     size_t head_ = 0, count_ = 0;
     float history_clock_ = 0, motion_ = 0, low_phase_ = 0;
+    float archive_time_ = 0;
     float peak_low_ = 0, peak_mid_ = 0, hit_age_ = 30, snare_age_ = 30;
     unsigned beat_ = 0;
     ArchiveStudies archive_;

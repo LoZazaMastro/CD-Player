@@ -235,6 +235,7 @@ int main()
     require(p.snapshot().track == 2, "reinsertion and direct second-track playback");
     p.visual_rotation(true);
     p.show_eject_button(false);
+    p.oled_visualizer(true);
     p.volume(.37f);
     p.gapless(false);
     p.reduced_motion(true);
@@ -262,6 +263,7 @@ int main()
     require(restored.start("build/player-test-data"), "restore worker start");
     const auto restored_snapshot = restored.snapshot();
     require(!restored_snapshot.show_eject_button, "Eject button visibility restored");
+    require(restored_snapshot.oled_visualizer, "OLED mode restored");
     require(restored_snapshot.autoplay, "autoplay preference restored");
     require(restored_snapshot.visual_rotation, "rotation preference restored");
     require(restored_snapshot.visualization == 147, "manually selected visualizer restored");

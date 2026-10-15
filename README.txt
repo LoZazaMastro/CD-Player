@@ -106,3 +106,12 @@ Doto: Oliver Lalan. Inter fallback font: Rasmus Andersson.
 SuperDrive initialization protocol: Alfredo Sandoval.
 Metadata: MusicBrainz, Cover Art Archive, Wikidata and Wikipedia contributors.
 See THIRD_PARTY_NOTICES.md and licenses/ for all component licenses.
+
+VERSION 1.1.0
+The track list follows the audible track only when it changes; manual browsing
+remains free. The Eject hint follows the Show Eject button setting.
+OLED mode hides fullscreen text after two seconds and slowly shifts effects.
+After one idle minute with playback stopped it shows a black screen; any input
+restores the picture. OLED mode is remembered between launches.
+Visualizer timing follows the display, with a compiled frame function and
+reusable buffers. Terminal effects include monospaced box-drawing characters.

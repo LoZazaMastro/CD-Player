@@ -5,7 +5,7 @@
 **Rediscover your audio CDs. Fall in love with your music again.**
 
 I wanted to listen to my audio CDs on my PS5. Sony no longer includes that
-simple feature on its recent consoles, so I decided to bring it back?with
+simple feature on its recent consoles, so I decided to bring it back with
 an external USB drive, and with as much attention to the design as to the sound.
 
 CD Player is a native PS5 homebrew app built around the album: a large cover,
@@ -15,7 +15,7 @@ Put a CD in, settle into your favourite chair, and listen.
 Designed by **Andrea Sgarro**.
 
 [Download the latest release](https://github.com/LoZazaMastro/CD-Player/releases/latest)
-? [Installation](#installation) ? [Controls](#controls) ? [Build from source](docs/BUILDING.md)
+| [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
 
 ![Blunderbuss by Jack White in CD Player](docs/screenshots/album.png)
 
@@ -26,9 +26,11 @@ Designed by **Andrea Sgarro**.
 - Open the album cover to read a description, when one is available. Notes come from MusicBrainz or its linked English Wikipedia article.
 - Enjoy a reflective 3D disc that enters with the album, accelerates into playback and slows down gently when paused.
 - Choose from **161 individual audio-reactive visualizers**, one at a time, or let the app shuffle them when the track changes.
+- Use **OLED mode** to hide fullscreen labels, gently move the effect, and switch to a black screen after a minute of inactivity while playback is stopped.
 - Adjust a ten-band equalizer, volume, gapless playback and optional stereo-to-7.1 upmix while listening.
 - Enable **Autoplay disc** if you want a newly inserted CD to start on its own.
 - Hide the Eject button if you prefer: the remaining buttons fill the same space, while their icons keep the same size.
+- The track list brings the playing track into view when it changes. You can then browse freely without the list pulling you back.
 - Keep your settings and chosen visualizer between launches. All interface text is in English.
 
 ## A quiet interface
@@ -99,7 +101,7 @@ depends on the USB bridge, drive firmware and console environment.
 | Hold Options, then press Circle | Close the app |
 
 A red Play icon marks the track you are hearing. When paused, its track number
-returns. Hiding the Eject icon does not remove the Triangle shortcut.
+returns. Hiding the Eject icon also hides its control hint; the Triangle shortcut remains available.
 
 ## Sound and saved settings
 

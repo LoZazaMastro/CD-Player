@@ -50,6 +50,17 @@ void ListView::enter()
     age_ = 0.0f;
 }
 
+void ListView::reveal_item(int index, bool snap)
+{
+    if (index < 0 || index >= static_cast<int>(items_.size()))
+        return;
+    const Rect in = inner();
+    const float top = row_top(index);
+    scroll_.reveal(top, top + row_size(index), in.h, 0, content_height());
+    if (snap)
+        scroll_.position.snap(scroll_.position.target);
+}
+
 Rect ListView::inner() const
 {
     return style.panel ? bounds_.inset(style.panel_padding) : bounds_;

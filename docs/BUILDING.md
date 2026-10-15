@@ -48,12 +48,16 @@ assets:
 python3 tools/prepare-preview.py
 CD_PLAYER_RELEASE_GALLERY=1 bash tools/preview.sh
 bash tools/test-archive.sh
+bash tools/test-screen.sh
 ```
 
 Preview frames use the same UI code and OpenGL shaders as the PS5 app, rendered
 on the host. A synthetic audio signal is used if no local test recording is
 available. The archive check exercises all 152 imported drawing programs; nine
-additional native composition studies complete the 161-item catalog.
+additional native composition studies complete the 161-item catalog. The screen
+check covers track-transition following without taking over manual browsing,
+and OLED label hiding, motion, blanking and wake-up. Archive reports separate
+initial loading from steady frame times and check redraw cadence and missing glyphs.
 
 ## What has been checked on a console
 

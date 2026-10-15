@@ -91,6 +91,8 @@ bool Player::start(std::string cache)
                 show_eject_button(settings["show_eject_button"].get<bool>());
             if (settings.contains("autoplay") && settings["autoplay"].is_boolean())
                 autoplay(settings["autoplay"].get<bool>());
+            if (settings.contains("oled_visualizer") && settings["oled_visualizer"].is_boolean())
+                oled_visualizer(settings["oled_visualizer"].get<bool>());
             if (settings.contains("bands") && settings["bands"].is_array())
                 for (size_t i = 0; i < 10 && i < settings["bands"].size(); ++i)
                     if (settings["bands"][i].is_number())
@@ -150,6 +152,7 @@ Snapshot Player::snapshot()
     s.visual_rotation = visual_rotation_.load();
     s.autoplay = autoplay_.load();
     s.show_eject_button = show_eject_button_.load();
+    s.oled_visualizer = oled_visualizer_.load();
     s.volume = volume();
     const uint64_t position = position_.load();
     s.track = 0;
@@ -373,6 +376,7 @@ void Player::io_loop()
                                        {"visualization", visualization_.load()},
                                        {"visual_rotation", visual_rotation_.load()},
                                        {"autoplay", autoplay_.load()},
+                                       {"oled_visualizer", oled_visualizer_.load()},
                                        {"show_eject_button", show_eject_button_.load()}};
             std::vector<float> bands;
             for (size_t i = 0; i < 10; ++i)

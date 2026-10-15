@@ -99,6 +99,9 @@ class ListView
     }
     // Moves the focus without sound; snap skips the glide (use it on open).
     void set_focus(int index, bool snap = true);
+    // Reveal a row without moving the user's selection. Call only on an event,
+    // such as a change of the audible track, rather than on every frame.
+    void reveal_item(int index, bool snap = false);
     // An inactive list keeps a faint highlight and ignores nothing by itself:
     // simply do not call handle() while another component has the focus.
     void set_active(bool active)

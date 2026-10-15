@@ -33,6 +33,7 @@ struct Snapshot
     bool playing = false;
     bool gapless = true, reduced_motion = false, visual_rotation = false, autoplay = false;
     bool show_eject_button = true;
+    bool oled_visualizer = false;
     unsigned visualization = 1;
     float volume = 1;
     uint64_t revision = 0, cover_revision = 0, underruns = 0;
@@ -51,6 +52,7 @@ class Player
     std::atomic<float> volume_{1.f};
     std::atomic<bool> gapless_{true}, reduced_motion_{false}, visual_rotation_{false}, autoplay_{false};
     std::atomic<bool> show_eject_button_{true};
+    std::atomic<bool> oled_visualizer_{false};
     std::atomic<unsigned> visualization_{1};
     VisualRotation rotation_;
     std::array<std::atomic<uint64_t>, 100> track_starts_{};
@@ -116,6 +118,7 @@ class Player
         visualization_.store(std::clamp(value, 1u, visualizer_count));
     }
     void show_eject_button(bool value) { show_eject_button_.store(value); }
+    void oled_visualizer(bool value) { oled_visualizer_.store(value); }
     void autoplay(bool value) { autoplay_.store(value); }
     void visual_rotation(bool value)
     {
