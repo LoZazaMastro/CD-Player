@@ -50,6 +50,19 @@ class Screen
     std::array<float, 10> eq_positions_{};
     size_t edition_count_ = SIZE_MAX;
     int visual_ = 1;
+    bool lyrics_page_ = false;
+    std::shared_ptr<const Lyrics> shown_lyrics_;
+    struct LyricBlock
+    {
+        std::vector<std::string> rows;
+        float center = 0, height = 0;
+    };
+    std::vector<LyricBlock> lyric_blocks_;
+    hui::tween::Spring lyric_scroll_;
+    int current_lyric_ = -1;
+    float plain_scroll_ = 0;
+    void update_lyrics(float dt, const Snapshot &);
+    void draw_lyrics(const Snapshot &, const std::string &clock);
     bool load_font(const std::string &, hui::gfx::Font &, hui::ui::FontRef &);
     void refresh_preferences(const Snapshot &, Dsp &);
 
@@ -64,8 +77,15 @@ class Screen
     void preview_fullscreen(bool value)
     {
         full_ = value;
+        lyrics_page_ = false;
         if (value)
             idle_ = 0;
+    }
+    void preview_lyrics(bool value)
+    {
+        full_ = value;
+        lyrics_page_ = value;
+        idle_ = 0;
     }
     void preview_preferences(bool value)
     {

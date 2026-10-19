@@ -37,7 +37,8 @@ int http_get(const std::string &url, std::vector<uint8_t> &out, size_t limit)
     if (url.rfind("https://musicbrainz.org/", 0) != 0 &&
         url.rfind("https://coverartarchive.org/", 0) != 0 &&
         url.rfind("https://www.wikidata.org/", 0) != 0 &&
-        url.rfind("https://en.wikipedia.org/", 0) != 0)
+        url.rfind("https://en.wikipedia.org/", 0) != 0 &&
+        url.rfind("https://lrclib.net/", 0) != 0)
         return -1;
     if (!initialized)
     {
@@ -55,7 +56,7 @@ int http_get(const std::string &url, std::vector<uint8_t> &out, size_t limit)
     Body body{out, limit};
     char error[CURL_ERROR_SIZE]{};
     curl_easy_setopt(request, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(request, CURLOPT_USERAGENT, "CDPlayer/0.1 (private PS5 homebrew)");
+    curl_easy_setopt(request, CURLOPT_USERAGENT, "CD-Player (https://github.com/LoZazaMastro/CD-Player)");
     curl_easy_setopt(request, CURLOPT_CONNECTTIMEOUT_MS, 5000L);
     curl_easy_setopt(request, CURLOPT_TIMEOUT_MS, 15000L);
     curl_easy_setopt(request, CURLOPT_FOLLOWLOCATION, 1L);

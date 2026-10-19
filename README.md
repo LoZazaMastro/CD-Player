@@ -29,6 +29,8 @@ Designed by **Andrea Sgarro**.
 - Choose from **161 individual audio-reactive visualizers**, one at a time, or let the app shuffle them when the track changes.
 - Use **OLED mode** to hide fullscreen labels, gently move the effect, and switch to a black screen after a minute of inactivity while playback is stopped.
 - Adjust a ten-band equalizer, volume, gapless playback and optional stereo-to-7.1 upmix while listening.
+- Set the generated surround and subwoofer gains separately, without raising the front pair.
+- Read lyrics in Doto with R3 from the fullscreen visualizer. Timed phrases follow the music when available through LRCLIB.
 - Enable **Autoplay disc** if you want a newly inserted CD to start on its own.
 - Hide the Eject button if you prefer: the remaining buttons fill the same space, while their icons keep the same size.
 - The track list brings the playing track into view when it changes. You can then browse freely without the list pulling you back.
@@ -97,6 +99,7 @@ depends on the USB bridge, drive firmware and console environment.
 | L1 / R1 | Previous / next track |
 | L2 / R2 | Seek backward / forward by 10 seconds |
 | Touchpad click | Enter / leave the fullscreen visualizer |
+| R3, in fullscreen | Switch between the visualizer and lyrics |
 | Options | Open settings |
 | Circle | Back |
 | Hold Options, then press Circle | Close the app |
@@ -111,7 +114,20 @@ the PS5 audio output. The optional 7.1 upmix derives surround channels from
 stereo; it is not an original multichannel recording. The control is unavailable
 when the output accepts only stereo.
 
-Equalizer settings, upmix, volume, gapless playback, autoplay, reduced motion,
+Surround gain controls only the generated center, side and rear channels.
+Subwoofer gain controls only the generated LFE channel. Both run from mute to
++24 dB, with 0 dB preserving the original upmix level. Neither slider raises
+the front left or right channel. Changes fade in smoothly; a soft peak limiter
+keeps the generated channels within the output range.
+
+Press R3 in the fullscreen visualizer to open lyrics. When LRCLIB has timed
+lyrics for the track, the current phrase is highlighted and scrolls smoothly
+to the center, following the CD's playback position through pauses and seeks.
+If only untimed text is available, it can be scrolled with the D-pad. Some
+tracks have no lyrics available. Lyrics need an Internet connection on first
+lookup and are cached for later use.
+
+Equalizer settings, upmix and its two channel gains, volume, gapless playback, autoplay, reduced motion,
 visualizer selection, shuffle and Eject-button visibility are saved automatically.
 They are checked for saving once per second and restored on the next launch.
 Updating the app leaves this data outside the installation folder:
@@ -148,6 +164,7 @@ the host tests and the distinction between a compiled build and a console test.
 - [PS5-Lapy-JB-Daemon](https://github.com/blackbearreloaded/PS5-Lapy-JB-Daemon) ? Arksama (Team PHU) and upstream contributors; the pinned exact-title access helper.
 - [QuickJS](https://bellard.org/quickjs/) ? Fabrice Bellard and Charlie Gordon; local execution of drawing programs.
 - MusicBrainz, Cover Art Archive, Wikidata and Wikipedia contributors ? album information and artwork services. Wikipedia text remains under CC BY-SA, with its source URL stored in cached metadata.
+- [LRCLIB](https://lrclib.net/) and its contributors supply lyrics and timing data. Lyrics remain the property of their respective rights holders; no song lyrics are bundled with the app.
 - libcurl, OpenSSL, libpsl, zstd, zlib, nlohmann/json and stb ? networking, decoding and supporting libraries.
 
 Full component notices and license texts are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)

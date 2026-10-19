@@ -60,11 +60,24 @@ be adjusted during playback. Upmix derives surround sound from stereo; it
 does not turn the CD into an original multichannel recording. The upmix
 control is unavailable when AudioOut only accepts stereo output.
 
+Surround gain changes only the generated center, side and rear channels.
+Subwoofer gain changes only LFE. Both range from mute to +24 dB; 0 dB retains
+the original upmix level. The front left and right channels are not raised.
+Gain changes are smoothed, with a soft peak limiter on generated channels.
+
+LYRICS
+Press R3 in the fullscreen visualizer to switch to lyrics, or back again.
+Timed lyrics highlight the current phrase and scroll it smoothly to the
+center, following playback, pause and seeking. When only untimed lyrics are
+available, use the D-pad to scroll. Availability depends on the track.
+Lyrics are provided by LRCLIB and cached after the first online lookup.
+No song lyrics or recordings are bundled with the app.
+
 Autoplay disc starts the first audio track after a disc is detected. It is off
 by default and can be enabled in settings. Changing the toggle does not start
 a disc that is already present.
 
-Equalizer bands and enable state, upmix, gapless playback, autoplay, volume, reduce
+Equalizer bands and enable state, upmix and its channel gains, gapless playback, autoplay, volume, reduce
 motion, selected visualizer, shuffle and Eject button visibility are saved
 automatically.
 Changes are checked for saving once per second and restored at the next launch.
@@ -119,3 +132,6 @@ reusable buffers. Terminal effects include monospaced box-drawing characters.
 VERSION 1.1.1
 Music keeps playing when the controller turns off or disconnects, including
 when the system temporarily takes controller input. Play/Pause remains manual.
+Separate surround and subwoofer gains leave front left and right unchanged.
+R3 switches between the fullscreen visualizer and lyrics. Timed phrases scroll
+with playback when available; untimed lyrics can be scrolled manually.

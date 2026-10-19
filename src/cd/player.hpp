@@ -6,6 +6,7 @@
 #include "cd/disc.hpp"
 #include "cd/sound.hpp"
 #include "cd/dsp.hpp"
+#include "cd/lyrics.hpp"
 #include "cd/visual_rotation.hpp"
 #include <atomic>
 #include <algorithm>
@@ -42,6 +43,8 @@ struct Snapshot
     std::vector<Release> editions;
     AlbumInfo album_info;
     bool album_info_ready = false, album_info_error = false;
+    LyricsState lyrics_state = LyricsState::idle;
+    std::shared_ptr<const Lyrics> lyrics;
 };
 class Player
 {
@@ -61,8 +64,13 @@ class Player
     unsigned gap_frames_ = 0;
     uint64_t previous_audio_position_ = UINT64_MAX, previous_audio_epoch_ = 0,
              last_gap_ = UINT64_MAX;
-    bool started_ = false, metadata_started_ = false;
-    pthread_t io_thread_{}, metadata_thread_{};
+    bool started_ = false, metadata_started_ = false, lyrics_started_ = false;
+    pthread_t io_thread_{}, metadata_thread_{}, lyrics_thread_{};
+    std::atomic<bool> lyrics_visible_{false};
+    std::string lyrics_key_;
+    std::string lyrics_disc_, lyrics_title_, lyrics_artist_, lyrics_album_;
+    uint32_t lyrics_duration_ = 0;
+    unsigned lyrics_track_ = 0;
     std::string cache_;
     Dsp *dsp_ = nullptr;
     AudioRing ring_;
@@ -74,9 +82,11 @@ class Player
     uint64_t metadata_generation_ = 0;
     void io_loop();
     void metadata_loop();
+    void lyrics_loop();
     void set_state(State, std::string);
     static void *io_entry(void *);
     static void *metadata_entry(void *);
+    static void *lyrics_entry(void *);
 
   public:
     ~Player();
@@ -93,6 +103,7 @@ class Player
     void next(int direction);
     void eject_disc();
     void choose_edition(size_t);
+    void lyrics_visible(bool value) { lyrics_visible_.store(value); }
     void volume(float v)
     {
         volume_.store(v);

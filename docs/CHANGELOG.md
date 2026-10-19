@@ -3,6 +3,8 @@
 ## 1.1.1
 
 - Keep the music playing when the controller turns off, disconnects, or the system temporarily takes controller input. Play/Pause still works as usual when the controller is connected.
+- Adjust the generated surround and subwoofer levels separately, from mute to +24 dB. Front left and right levels stay unchanged.
+- Press R3 in the fullscreen visualizer to switch to lyrics. Timed phrases follow playback with smooth scrolling; untimed lyrics can be scrolled manually.
 
 ## 1.1.0
 

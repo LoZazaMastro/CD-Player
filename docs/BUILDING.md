@@ -40,6 +40,14 @@ saved-preference round trips, and animation behavior. Tests use synthetic
 settings and public metadata fixtures, not a user's logs or saved configuration.
 AddressSanitizer and UndefinedBehaviorSanitizer are enabled where appropriate.
 
+The audio checks compare the front pair sample by sample while changing the
+generated surround and LFE gains, and test their independence, mute and peak
+behavior. Lyrics checks use self-authored timing fixtures to exercise LRC
+parsing, metadata/duration matching, malformed responses and playback-position
+lookup. The UI check covers R3 switching, smooth phrase following and seeks.
+These host checks do not establish network availability or perceived surround
+levels on a particular PS5 and audio system.
+
 For UI snapshots, fetch the public album metadata and artwork into the ignored
 preview cache. No album artwork or audio recording is part of the application
 assets:

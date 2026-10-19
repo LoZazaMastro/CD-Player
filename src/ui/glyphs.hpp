@@ -30,6 +30,7 @@ enum class Button : std::uint8_t
     right_stick,
     dpad,
     touchpad,
+    r3,
 };
 
 // How glyphs are coloured. dark() suits dark screens, light() light ones;

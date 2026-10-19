@@ -13,6 +13,8 @@ namespace
 {
 std::atomic<bool> medium{true};
 std::atomic<unsigned> wakes{0}, ejections{0}, reads{0};
+std::atomic<bool> lyrics_enabled{false}, lyrics_busy{false};
+std::atomic<unsigned> lyric_requests{0};
 class FakeDrive : public cd::Drive
 {
   public:
@@ -139,8 +141,18 @@ std::unique_ptr<Drive> open_drive(const std::string &, std::string &)
 {
     return std::make_unique<FakeDrive>();
 }
-int http_get(const std::string &, std::vector<uint8_t> &, size_t)
+int http_get(const std::string &url, std::vector<uint8_t> &out, size_t limit)
 {
+    if(lyrics_enabled.load() && url.starts_with("https://lrclib.net/"))
+    {
+        ++lyric_requests;lyrics_busy.store(true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        const bool second=url.find("Fixture%20Two")!=std::string::npos;
+        const std::string response=std::string(R"({"trackName":")")+(second?"Fixture Two":"Fixture One")+
+            R"(","artistName":"Fixture Artist","duration":0.213333,"syncedLyrics":"[00:00.00]A test phrase\n[00:00.10]Another test phrase"})";
+        require(response.size()<=limit,"lyrics response bounded");
+        out.assign(response.begin(),response.end());lyrics_busy.store(false);return 200;
+    }
     return 404;
 }
 } // namespace cd
@@ -241,6 +253,8 @@ int main()
     p.reduced_motion(true);
     preferences.equalizer(true);
     preferences.upmix(true);
+    preferences.surround_gain(8);
+    preferences.lfe_gain(12);
     for(size_t band=0;band<10;++band)preferences.band(band,float(band)-5);
     p.visualization(147);
     bool saved = false;
@@ -271,9 +285,39 @@ int main()
     require(!restored.gapless(), "gapless preference restored");
     require(restored_snapshot.reduced_motion, "motion preference restored");
     require(restored_preferences.equalizer() && restored_preferences.upmix(), "DSP toggles restored into fresh DSP");
+    require(restored_preferences.surround_gain()==8 && restored_preferences.lfe_gain()==12,
+            "independent surround and subwoofer gains restored");
     for(size_t band=0;band<10;++band)
         require(std::abs(restored_preferences.band(band)-(float(band)-5)) < .001f, "every EQ band restored");
     restored.stop();
+    const std::string lyric_cache="build/player-lyrics-test-data";
+    std::filesystem::create_directories(lyric_cache);
+    for(const auto &file:std::filesystem::directory_iterator(lyric_cache))
+        if(file.is_regular_file() && file.path().filename().string().starts_with("lyrics-"))
+            std::filesystem::remove(file.path());
+    {
+        std::ofstream metadata(lyric_cache+"/Eoi6K6eMdKcHaqJ9LHWKtlPgElI-.json");
+        metadata<<R"({"releases":[{"id":"12345678-1234-1234-1234-123456789abc","title":"Fixture Album","artist-credit":[{"name":"Fixture Artist"}],"media":[{"discs":[{"id":"Eoi6K6eMdKcHaqJ9LHWKtlPgElI-"}],"tracks":[{"position":1,"title":"Fixture One"},{"position":2,"title":"Fixture Two"}]}]}]})";
+    }
+    cd::Player lyric_player;cd::Dsp lyric_dsp;lyric_player.audio_preferences(lyric_dsp);
+    lyrics_enabled.store(true);
+    require(lyric_player.start(lyric_cache),"lyrics workers start");wait_state(lyric_player,cd::State::ready);
+    for(unsigned n=0;n<300 && lyric_player.snapshot().disc.artist.empty();++n)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    require(lyric_player.snapshot().disc.artist=="Fixture Artist","lyrics use resolved album metadata");
+    require(lyric_requests.load()==0,"no lyrics request until page is opened");
+    lyric_player.lyrics_visible(true);
+    const auto wait_lyrics=[&](){for(unsigned n=0;n<400;++n){const auto s=lyric_player.snapshot();if(s.lyrics_state==cd::LyricsState::ready && s.lyrics)return;std::this_thread::sleep_for(std::chrono::milliseconds(10));}require(false,"lyrics timeout");};
+    wait_lyrics();require(lyric_player.snapshot().lyrics->synced,"worker decodes timed lyrics");
+    lyric_player.play_track(1);
+    for(unsigned n=0;n<200 && !lyrics_busy.load();++n)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    require(lyrics_busy.load(),"second-track request in progress");
+    lyric_player.play_track(0);
+    require(!lyric_player.snapshot().lyrics,"late track response cannot display against a different audible track");
+    wait_lyrics();
+    require(lyric_player.snapshot().track==1 && lyric_requests.load()==2,"return to earlier track uses cache");
+    lyric_player.lyrics_visible(false);lyric_player.stop();lyrics_enabled.store(false);
     std::printf("Session passed: wake, TOC, pause, exact gap/gapless, eject, reinsertion, track "
                 "selection (%u reads)\n",
                 reads.load());

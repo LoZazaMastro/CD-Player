@@ -31,6 +31,9 @@ struct ScreenInspection
     }
     static void idle(Screen &s,float value) { s.idle_=value; }
     static void preference(Screen &s,int id) { s.preferences_.focus_row(id); }
+    static bool lyrics(const Screen &s) { return s.lyrics_page_; }
+    static int line(const Screen &s) { return s.current_lyric_; }
+    static float lyric_error(const Screen &s) { return s.lyric_scroll_.target-s.lyric_scroll_.value; }
     static size_t glyphs(const Screen &s)
     {
         size_t result=0;
@@ -98,6 +101,31 @@ int main()
         require(cd::ScreenInspection::glyphs(screen)>0 && !cd::ScreenInspection::black(screen),"normal mode retains metadata and clock");
         const auto a=cd::VisualizerPresentation::sample(true,3,10,true), b=cd::VisualizerPresentation::sample(true,3,30,true);
         require(std::abs(a.x-b.x)>1 && std::abs(a.y-b.y)>1,"OLED effect moves in both axes");
+        hui::InputFrame r3;r3.pressed=hui::action_bit(hui::Action::r3);
+        screen.handle(r3,feedback,player,dsp);
+        require(cd::ScreenInspection::lyrics(screen),"R3 opens lyrics from fullscreen visualizer");
+        state.lyrics=std::make_shared<const cd::Lyrics>(cd::parse_lrc(
+            "[00:01.00]First test phrase\n[00:04.00]Second test phrase\n[00:08.00]Third test phrase"));
+        state.lyrics_state=cd::LyricsState::ready;state.seconds=2;state.playing=true;
+        settle();draw();require(cd::ScreenInspection::line(screen)==0,"first sung phrase selected");
+        state.seconds=5;screen.update(1.f/60,state,dsp);
+        require(cd::ScreenInspection::line(screen)==1 && cd::ScreenInspection::lyric_error(screen)>1,
+                "cue changes start smooth scrolling instead of snapping");
+        settle();require(std::abs(cd::ScreenInspection::lyric_error(screen))<.1f,"current phrase settles at screen center");
+        state.playing=false;settle();require(cd::ScreenInspection::line(screen)==1,"paused lyrics follow held audio position");
+        state.seconds=1.5;settle();require(cd::ScreenInspection::line(screen)==0,"backward seek selects earlier phrase");
+        screen.handle(r3,feedback,player,dsp);require(!cd::ScreenInspection::lyrics(screen),"R3 returns to visualizer");
+        screen.handle(r3,feedback,player,dsp);
+        hui::InputFrame menu;menu.pressed=hui::action_bit(hui::Action::menu);
+        screen.handle(menu,feedback,player,dsp);require(!cd::ScreenInspection::lyrics(screen),"settings leave lyrics mode");
+        settle();dsp.upmix(true);settle();
+        cd::ScreenInspection::preference(screen,12);
+        hui::InputFrame increase;increase.nav=hui::Direction::right;
+        screen.handle(increase,feedback,player,dsp);
+        require(dsp.surround_gain()>1 && dsp.lfe_gain()==1,"surround slider changes only additional channels gain");
+        const float surround_gain=dsp.surround_gain();
+        cd::ScreenInspection::preference(screen,13);screen.handle(increase,feedback,player,dsp);
+        require(dsp.lfe_gain()>1 && dsp.surround_gain()==surround_gain,"subwoofer slider operates independently");
     }
     eglMakeCurrent(display,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
     eglDestroyContext(display,context);eglTerminate(display);

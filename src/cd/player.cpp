@@ -76,6 +76,10 @@ bool Player::start(std::string cache)
                 dsp_->equalizer(settings["equalizer"].get<bool>());
             if (settings.contains("upmix") && settings["upmix"].is_boolean())
                 dsp_->upmix(settings["upmix"].get<bool>());
+            if (settings.contains("surround_gain") && settings["surround_gain"].is_number())
+                dsp_->surround_gain(settings["surround_gain"].get<float>());
+            if (settings.contains("lfe_gain") && settings["lfe_gain"].is_number())
+                dsp_->lfe_gain(settings["lfe_gain"].get<float>());
             if (settings.contains("gapless") && settings["gapless"].is_boolean())
                 gapless(settings["gapless"].get<bool>());
             if (settings.contains("volume") && settings["volume"].is_number())
@@ -106,6 +110,8 @@ bool Player::start(std::string cache)
     started_ = worker(io_thread_, io_entry, this);
     if (started_)
         metadata_started_ = worker(metadata_thread_, metadata_entry, this);
+    if (started_)
+        lyrics_started_ = worker(lyrics_thread_, lyrics_entry, this);
     return started_;
 }
 void Player::stop()
@@ -122,6 +128,11 @@ void Player::stop()
         pthread_join(metadata_thread_, nullptr);
         metadata_started_ = false;
     }
+    if (lyrics_started_)
+    {
+        pthread_join(lyrics_thread_, nullptr);
+        lyrics_started_ = false;
+    }
 }
 void *Player::io_entry(void *p)
 {
@@ -131,6 +142,11 @@ void *Player::io_entry(void *p)
 void *Player::metadata_entry(void *p)
 {
     static_cast<Player *>(p)->metadata_loop();
+    return nullptr;
+}
+void *Player::lyrics_entry(void *p)
+{
+    static_cast<Player *>(p)->lyrics_loop();
     return nullptr;
 }
 void Player::set_state(State state, std::string message)
@@ -164,6 +180,28 @@ Snapshot Player::snapshot()
             s.seconds = double(position - uint64_t(t.start) * 640) / 48000.;
             break;
         }
+    }
+    if (s.track != lyrics_track_ || lyrics_key_.empty())
+    {
+        s.lyrics.reset();
+        s.lyrics_state = lyrics_visible_.load() ? LyricsState::loading : LyricsState::idle;
+    }
+    else
+    {
+        const auto current = std::find_if(s.disc.tracks.begin(),s.disc.tracks.end(),
+            [&](const auto &t){return t.number==s.track;});
+        if (current==s.disc.tracks.end() || s.disc.id!=lyrics_disc_ || current->title!=lyrics_title_ ||
+            (current->artist.empty()?s.disc.artist:current->artist)!=lyrics_artist_ ||
+            s.disc.album!=lyrics_album_ || current->end-current->start!=lyrics_duration_)
+        {s.lyrics.reset();s.lyrics_state=LyricsState::loading;}
+    }
+    if (lyrics_visible_.load() && s.state == State::ready && s.track != 0)
+    {
+        const auto track = std::find_if(s.disc.tracks.begin(), s.disc.tracks.end(),
+            [&](const auto &t){ return t.number == s.track; });
+        if (!lyrics_started_ || (track != s.disc.tracks.end() &&
+            (track->title.empty() || (track->artist.empty() && s.disc.artist.empty()))))
+            s.lyrics_state = LyricsState::unavailable;
     }
     if (s.state == State::ready)
     {
@@ -370,6 +408,8 @@ void Player::io_loop()
             nlohmann::json settings = {{"version", 1},
                                        {"equalizer", dsp_->equalizer()},
                                        {"upmix", dsp_->upmix()},
+                                       {"surround_gain", dsp_->surround_gain()},
+                                       {"lfe_gain", dsp_->lfe_gain()},
                                        {"gapless", gapless()},
                                        {"volume", volume()},
                                        {"reduced_motion", reduced_motion_.load()},
@@ -778,6 +818,64 @@ void Player::metadata_loop()
             }
         }
         completed = generation;
+    }
+}
+void Player::lyrics_loop()
+{
+    std::string completed;
+    while (!stop_.load())
+    {
+        if (!lyrics_visible_.load()) { completed.clear(); wait(100000); continue; }
+        Disc disc;
+        Track track;
+        uint64_t generation=0;
+        {
+            std::lock_guard lock(mutex_);
+            const auto position=position_.load();
+            if (snapshot_.state==State::ready)
+                for (const auto &t:snapshot_.disc.tracks)
+                    if (position>=uint64_t(t.start)*640 && position<uint64_t(t.end)*640 && t.audio())
+                    {disc=snapshot_.disc;track=t;generation=metadata_generation_;break;}
+        }
+        const auto key=lyrics_cache_key(track,disc);
+        if (key.empty() || key==completed) { wait(100000); continue; }
+        {
+            std::lock_guard lock(mutex_);
+            lyrics_key_=key;lyrics_track_=track.number;lyrics_disc_=disc.id;
+            lyrics_title_=track.title;lyrics_artist_=track.artist.empty()?disc.artist:track.artist;
+            lyrics_album_=disc.album;lyrics_duration_=track.end-track.start;
+            snapshot_.lyrics.reset();snapshot_.lyrics_state=LyricsState::loading;
+        }
+        const auto path=cache_+"/"+key+".json";
+        std::vector<uint8_t> body;
+        bool cached=get_cache(path,body,512u<<10);
+        int status=cached?200:http_get(lyrics_url(track,disc),body,512u<<10);
+        if (stop_.load()) break;
+        Lyrics decoded;
+        if (status==200)
+            decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
+        if (cached && decoded.lines.empty() && !decoded.instrumental)
+        {
+            body.clear();status=http_get(lyrics_url(track,disc),body,512u<<10);
+            if (stop_.load()) break;
+            if(status==200)decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
+        }
+        const bool available=!decoded.lines.empty()||decoded.instrumental;
+        const bool synced=decoded.synced;
+        if(available)write_cache(path,body);
+        auto lyrics=std::make_shared<const Lyrics>(std::move(decoded));
+        {
+            std::lock_guard lock(mutex_);
+            if(metadata_generation_!=generation || snapshot_.disc.id!=disc.id)continue;
+            const auto current=std::find_if(snapshot_.disc.tracks.begin(),snapshot_.disc.tracks.end(),
+                [&](const auto &t){return t.number==track.number;});
+            if(current==snapshot_.disc.tracks.end() || lyrics_cache_key(*current,snapshot_.disc)!=key)continue;
+            snapshot_.lyrics=std::move(lyrics);
+            snapshot_.lyrics_state=available?LyricsState::ready:LyricsState::unavailable;
+        }
+        hui::sys::log("[CD lyrics] track=%u status=%d available=%d synced=%d",track.number,status,available,
+                      synced);
+        completed=key;
     }
 }
 } // namespace cd

@@ -45,6 +45,13 @@ not included in its application folder. The app uses its own minimal digital sty
 
 ## Credits and acknowledgements
 
+CD Player uses the public [LRCLIB](https://lrclib.net/) API for optional lyrics
+lookup. Thanks to Tran Xuan Thang and the LRCLIB contributors. The service's
+server source is available at <https://github.com/tranxuanthang/lrclib> under
+the MIT license; its code is not bundled in this application. Song lyrics
+remain the property of their respective rights holders. No lyrics are shipped
+in the application package.
+
 ps5-homebrew-ui exists thanks to the maintainers and contributors of:
 
 - [ps5-opengl](https://github.com/blackbearreloaded/ps5-opengl), with

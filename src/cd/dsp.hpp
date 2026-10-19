@@ -24,11 +24,14 @@ class Dsp
     std::array<std::atomic<float>, 10> requested_{};
     std::array<Filter, 10> filters_{};
     std::atomic<bool> enabled_{false}, surround_{false};
+    std::atomic<float> requested_surround_gain_{1}, requested_lfe_gain_{1};
     std::array<float, 4096> delay_left_{}, delay_right_{};
     size_t delay_at_ = 0;
     float surround_blend_ = 0, eq_blend_ = 0, lfe_ = 0;
+    float surround_gain_ = 1, lfe_gain_ = 1;
 
   public:
+    static constexpr float maximum_gain = 15.848932f; // +24 dB
     void equalizer(bool enabled)
     {
         enabled_.store(enabled);
@@ -46,6 +49,10 @@ class Dsp
         return surround_.load();
     }
     void band(size_t i, float db);
+    void surround_gain(float value);
+    void lfe_gain(float value);
+    float surround_gain() const { return requested_surround_gain_.load(); }
+    float lfe_gain() const { return requested_lfe_gain_.load(); }
     float band(size_t i) const;
     void process(std::span<const int16_t> stereo, std::span<int16_t> out, unsigned channels);
 };

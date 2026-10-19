@@ -267,6 +267,18 @@ int main()
     for(int frame=0;frame<3601;++frame)screen.update(1.f/60,snapshot,dsp);
     capture("visualizer-oled-black");
     snapshot.playing=true;snapshot.oled_visualizer=false;snapshot.visualization=17;
+    // Self-authored timing fixture: exercise the real lyrics layout without bundling song lyrics.
+    snapshot.lyrics = std::make_shared<const cd::Lyrics>(cd::parse_lrc(
+        "[00:00.00]A little room for music\n[00:05.00]Let the record carry you\n"
+        "[00:10.00]Every song finds its own way home\n[00:15.00]And the evening opens slowly\n"
+        "[00:20.00]One more moment, one more song"));
+    snapshot.lyrics_state=cd::LyricsState::ready;snapshot.seconds=10.5;
+    screen.preview_lyrics(true);
+    for(int frame=0;frame<120;++frame)screen.update(1.f/60,snapshot,dsp);
+    capture("lyrics");
+    screen.preview_lyrics(true);capture("lyrics-hints");
+    snapshot.lyrics.reset();snapshot.lyrics_state=cd::LyricsState::unavailable;
+    screen.update(1.f/60,snapshot,dsp);capture("lyrics-unavailable");
     screen.preview_fullscreen(false);
     screen.preview_preferences(true);
     for (int i = 0; i < 60; ++i)

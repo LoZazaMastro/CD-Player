@@ -26,6 +26,22 @@ namespace
 const gfx::Color ink = gfx::Color::rgb(0xffffff), muted = gfx::Color::rgb(0x999999),
                  accent = gfx::Color::rgb(0xd71920);
 
+float gain_db(float gain)
+{
+    return gain > 0 ? std::clamp(20.f * std::log10(gain), -48.f, 24.f) : -49.f;
+}
+float db_gain(float db)
+{
+    return db <= -49 ? 0 : std::pow(10.f, db / 20.f);
+}
+std::string gain_label(float db)
+{
+    if (db <= -49) return "Mute";
+    char value[20];
+    std::snprintf(value, sizeof(value), "%+.0f dB", double(db));
+    return value;
+}
+
 std::string duration(double seconds)
 {
     const int total = std::max(0, int(seconds));
@@ -203,6 +219,12 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
         eq.text = "10 bands";
         preferences_.add_toggle(1, "Upmix 7.1", dsp.upmix()).description =
             "Surround derived from stereo audio";
+        auto &surround = preferences_.add_slider(12, "Surround gain", gain_db(dsp.surround_gain()), -49, 24, 1);
+        surround.format = gain_label;
+        surround.description = "Center and surround speakers; 0 dB keeps the original level";
+        auto &subwoofer = preferences_.add_slider(13, "Subwoofer gain", gain_db(dsp.lfe_gain()), -49, 24, 1);
+        subwoofer.format = gain_label;
+        subwoofer.description = "Independent bass channel gain; 0 dB keeps the original level";
         preferences_.add_toggle(2, "Gapless playback", gapless_);
         preferences_.add_toggle(8, "Autoplay disc", snapshot.autoplay);
         preferences_.add_slider(5, "Volume", snapshot.volume * 100, 0, 100, 5).unit = " %";
@@ -229,6 +251,10 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
         preferences_.add_value(9, "Designed by Andrea Sgarro", "");
     }
     preferences_.set_disabled(1, audio_channels_ != 8);
+    preferences_.set_disabled(12, audio_channels_ != 8 || !dsp.upmix());
+    preferences_.set_disabled(13, audio_channels_ != 8 || !dsp.upmix());
+    preferences_.set_slider(12, gain_db(dsp.surround_gain()));
+    preferences_.set_slider(13, gain_db(dsp.lfe_gain()));
     preferences_.set_toggle(1, dsp.upmix());
     preferences_.set_toggle(2, gapless_);
     preferences_.set_toggle(3, reduced_motion_);
@@ -383,6 +409,103 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
     tracks_.update(dt);
     actions_.update(dt);
     preferences_.update(dt);
+    if (lyrics_page_)
+        update_lyrics(dt, snapshot);
+}
+
+void Screen::update_lyrics(float dt, const Snapshot &snapshot)
+{
+    const bool changed = shown_lyrics_ != snapshot.lyrics;
+    if (changed)
+    {
+        shown_lyrics_ = snapshot.lyrics;
+        lyric_blocks_.clear();
+        plain_scroll_ = 0;
+        float top = 0;
+        if (shown_lyrics_)
+            for (const auto &line : shown_lyrics_->lines)
+            {
+                LyricBlock block;
+                block.rows = doto_.wrap(line.text, 58, 1480);
+                if (block.rows.empty()) block.rows.emplace_back();
+                block.height = float(block.rows.size()) * 80;
+                block.center = top + block.height * .5f;
+                top += block.height + 48;
+                lyric_blocks_.push_back(std::move(block));
+            }
+    }
+    current_lyric_ = shown_lyrics_ ? lyric_line_at(*shown_lyrics_, snapshot.seconds) : -1;
+    const auto index = size_t(std::max(0, current_lyric_));
+    lyric_scroll_.target = shown_lyrics_ && shown_lyrics_->synced && !lyric_blocks_.empty()
+        ? lyric_blocks_[std::min(index, lyric_blocks_.size()-1)].center
+        : plain_scroll_ + (lyric_blocks_.empty() ? 0.f : lyric_blocks_.front().center);
+    if (changed || reduced_motion_) lyric_scroll_.snap(lyric_scroll_.target);
+    else lyric_scroll_.update(dt, 12);
+}
+
+void Screen::draw_lyrics(const Snapshot &snapshot, const std::string &clock)
+{
+    const auto presentation = VisualizerPresentation::sample(
+        snapshot.oled_visualizer, idle_, time_, snapshot.playing);
+    if (presentation.blank) return;
+
+    const float drift_x = snapshot.oled_visualizer ? presentation.x * .12f : 0;
+    const float drift_y = snapshot.oled_visualizer ? presentation.y * .12f : 0;
+    page_.push_clip({96, 200, 1728, 680});
+    page_.push_transform(1, 0, 0, drift_x, drift_y);
+    if (!lyric_blocks_.empty())
+    {
+        for (size_t i = 0; i < lyric_blocks_.size(); ++i)
+        {
+            const auto &block = lyric_blocks_[i];
+            const float center = 540 + block.center - lyric_scroll_.value;
+            if (center + block.height * .5f < 200 || center - block.height * .5f > 880) continue;
+            const bool active = shown_lyrics_->synced && int(i) == current_lyric_;
+            for (size_t row = 0; row < block.rows.size(); ++row)
+            {
+                const float cy = center + (float(row) - (float(block.rows.size())-1)*.5f)*80;
+                const float edge = std::clamp(std::min(cy-200, 880-cy)/90, 0.f, 1.f);
+                const float alpha = active ? 1.f : !shown_lyrics_->synced ? .8f : int(i)<current_lyric_ ? .25f : .5f;
+                const auto color = (active ? accent : ink).with_alpha(edge * alpha);
+                ui::text(page_, fonts_.display, block.rows[row], 960,
+                    cy+(doto_.ascent(58)-doto_.descent(58))*.5f, 58, color, gfx::Align::center);
+            }
+        }
+    }
+    else
+    {
+        const char *message = snapshot.state != State::ready || snapshot.track == 0 ? "Play a track to view lyrics"
+            : snapshot.lyrics_state == LyricsState::loading || snapshot.lyrics_state == LyricsState::idle ? "Finding lyrics..."
+            : shown_lyrics_ && shown_lyrics_->instrumental ? "Instrumental"
+            : "Lyrics unavailable for this track";
+        ui::text(page_, fonts_.display, message, 960,
+            centered_baseline(doto_, message, 38, 540), 38, muted, gfx::Align::center);
+    }
+    page_.pop_transform();
+    page_.pop_clip();
+    // Track labels share the visualizer's OLED behavior. Sung lines remain visible.
+    if (presentation.labels > 0)
+    {
+        page_.push_opacity(presentation.labels);
+        std::string title = snapshot.disc.album;
+        for (const auto &track : snapshot.disc.tracks)
+            if (track.number == snapshot.track) title = track.title;
+        ui::text(page_, fonts_.display, doto_.fit(title, 32, 1400), 96, 118, 32, ink);
+        ui::text(page_, fonts_.display, clock, 1824,
+            centered_baseline(doto_, clock, 64.5f, 98), 64.5f, ink, gfx::Align::right);
+        page_.pop_opacity();
+    }
+    if (presentation.hints > 0)
+    {
+        page_.push_opacity(presentation.hints);
+        if (shown_lyrics_ && !shown_lyrics_->synced && !shown_lyrics_->instrumental)
+            ui::text(page_, fonts_.display, "Synced lyrics unavailable", 960, 928, 24, muted, gfx::Align::center);
+        const ui::Hint hints[] = {{ui::Button::circle, "Back"}, {ui::Button::cross, "Play / pause"},
+                                 {ui::Button::r3, "Visualizer"}, {ui::Button::dpad, "Scroll"}};
+        const int count = shown_lyrics_ && !shown_lyrics_->synced && !shown_lyrics_->instrumental ? 4 : 3;
+        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, count, 96, false);
+        page_.pop_opacity();
+    }
 }
 
 void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &player, Dsp &dsp)
@@ -413,6 +536,8 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
         settings_ = !settings_;
         album_panel_ = false;
         full_ = false;
+        lyrics_page_ = false;
+        player.lyrics_visible(false);
         equalizer_page_ = false;
         feedback.play(audio::Cue::modal_open);
         return;
@@ -421,6 +546,8 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
     if (input.is_pressed(Action::touch))
     {
         full_ = !full_;
+        lyrics_page_ = false;
+        player.lyrics_visible(false);
         album_panel_ = false;
         settings_ = false;
         equalizer_page_ = false;
@@ -551,6 +678,10 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
                 player.show_eject_button(form.toggle_value(10));
             if (id == 11)
                 player.oled_visualizer(form.toggle_value(11));
+            if (id == 12)
+                dsp.surround_gain(db_gain(form.slider_value(12)));
+            if (id == 13)
+                dsp.lfe_gain(db_gain(form.slider_value(13)));
         }
 
         return;
@@ -558,12 +689,32 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
 
     if (full_)
     {
+        if (input.is_pressed(Action::r3))
+        {
+            lyrics_page_ = !lyrics_page_;
+            player.lyrics_visible(lyrics_page_);
+            feedback.play(audio::Cue::select);
+            return;
+        }
         if (input.is_pressed(Action::back))
-            full_ = false;
+        {
+            if (lyrics_page_) lyrics_page_ = false;
+            else full_ = false;
+            player.lyrics_visible(false);
+            return;
+        }
 
         if (input.is_pressed(Action::confirm))
             player.toggle_pause();
 
+        if (lyrics_page_)
+        {
+            if (shown_lyrics_ && !shown_lyrics_->synced &&
+                (input.nav == Direction::up || input.nav == Direction::down))
+                plain_scroll_ = std::clamp(plain_scroll_ + (input.nav == Direction::down ? 90.f : -90.f),
+                    0.f, lyric_blocks_.empty() ? 0.f : lyric_blocks_.back().center);
+            return;
+        }
         if (input.nav == Direction::left || input.nav == Direction::right)
         {
             visual_ = 1 + (visual_ - 1 + (input.nav == Direction::right ? 1 : int(visualizer_count)-1)) % int(visualizer_count);
@@ -720,6 +871,8 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
 
         ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 3, 96, false);
     }
+    else if (full_ && lyrics_page_)
+        draw_lyrics(snapshot, clock);
     else if (full_)
     {
         const auto presentation = VisualizerPresentation::sample(
@@ -760,13 +913,14 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
 
         ui::Hint hints[] = {{ui::Button::circle, "Back"},
                             {ui::Button::cross, "Play / pause"},
-                            {ui::Button::dpad, "Effect"}};
+                            {ui::Button::dpad, "Effect"},
+                            {ui::Button::r3, "Lyrics"}};
 
 
         if (hint_opacity > 0)
         {
             page_.push_opacity(hint_opacity);
-            ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 3, 96, false);
+            ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 4, 96, false);
             page_.pop_opacity();
         }
     }

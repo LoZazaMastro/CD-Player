@@ -4,6 +4,7 @@
 #include "cd/disc.hpp"
 #include "cd/sound.hpp"
 #include "cd/dsp.hpp"
+#include "cd/lyrics.hpp"
 #include <cassert>
 #include <algorithm>
 #include <cmath>
@@ -11,16 +12,18 @@
 #include <fstream>
 #include <numbers>
 #include <random>
+#include <limits>
+#include <source_location>
 
 int main()
 {
     unsigned checks = 0;
-    auto check = [&](bool value)
+    auto check = [&](bool value, std::source_location location = std::source_location::current())
     {
         ++checks;
         if (!value)
         {
-            std::fprintf(stderr, "Check %u failed\n", checks);
+            std::fprintf(stderr, "Check %u failed at %s:%u\n", checks, location.file_name(), location.line());
             std::abort();
         }
     };
@@ -181,6 +184,81 @@ int main()
     check(surround[2] > 0 && surround[3] > 0);
     check(surround[720 * 8 + 6] > 0 && surround[720 * 8 + 7] < 0);
     check(surround[1200 * 8 + 4] > 0 && surround[1200 * 8 + 5] < 0);
+    // Independent generated-channel gains, preserving the original front pair.
+    std::vector<int16_t> signal(48000*2), normal(48000*8), louder(48000*8), bass(48000*8);
+    for (size_t i=0;i<48000;++i)
+    {
+        signal[i*2]=int16_t(900*std::sin(2*std::numbers::pi*70*i/48000));
+        signal[i*2+1]=int16_t(600*std::sin(2*std::numbers::pi*110*i/48000));
+    }
+    cd::Dsp reference, boosted, sub;
+    reference.upmix(true);boosted.upmix(true);sub.upmix(true);
+    boosted.surround_gain(8);sub.lfe_gain(8);
+    reference.process(signal,normal,8);boosted.process(signal,louder,8);sub.process(signal,bass,8);
+    for(size_t i=0;i<48000;++i)
+        check(normal[i*8]==louder[i*8] && normal[i*8+1]==louder[i*8+1] &&
+              normal[i*8]==bass[i*8] && normal[i*8+1]==bass[i*8+1]);
+    for(unsigned c=0;c<8;++c)
+    {
+        double base=0,surround_energy=0,bass_energy=0;
+        for(size_t i=12000;i<48000;++i)
+        {
+            base+=double(normal[i*8+c])*normal[i*8+c];
+            surround_energy+=double(louder[i*8+c])*louder[i*8+c];
+            bass_energy+=double(bass[i*8+c])*bass[i*8+c];
+        }
+        const double expected_surround=c>=2&&c!=3?8:1, expected_bass=c==3?8:1;
+        check(base>1000 && std::abs(std::sqrt(surround_energy/base)-expected_surround)<.02);
+        check(std::abs(std::sqrt(bass_energy/base)-expected_bass)<.02);
+    }
+    boosted.surround_gain(0);boosted.lfe_gain(0);
+    boosted.process(signal,louder,8);
+    for(size_t i=12000;i<48000;++i)
+        for(unsigned c=2;c<8;++c)check(louder[i*8+c]==0);
+    boosted.surround_gain(1000);boosted.lfe_gain(1000);
+    check(boosted.surround_gain()==cd::Dsp::maximum_gain && boosted.lfe_gain()==cd::Dsp::maximum_gain);
+    boosted.surround_gain(std::numeric_limits<float>::infinity());
+    boosted.lfe_gain(std::numeric_limits<float>::quiet_NaN());
+    check(boosted.surround_gain()==cd::Dsp::maximum_gain && boosted.lfe_gain()==cd::Dsp::maximum_gain);
+    std::fill(signal.begin(),signal.end(),32767);boosted.process(signal,louder,8);
+    check(louder[louder.size()-6]>32000 && louder[louder.size()-5]>32000);
+    check(louder[louder.size()-8]==26214 && louder[louder.size()-7]==26214);
+    std::vector<int16_t> stereo_only(signal.size());
+    boosted.process(signal,stereo_only,2);
+    // The preceding 8-channel stream crossfades out of its existing upmix.
+    boosted.process(signal,stereo_only,2);
+    check(signal==stereo_only);
+    // Timestamp parsing and matching use CD playback time, including backward seeks.
+    const auto lyrics=cd::parse_lrc("[ar:Test]\n[00:01.50]First phrase\n[00:04.000][00:12.00]Repeated phrase\n[00:07]Third phrase");
+    check(lyrics.synced && lyrics.lines.size()==4);
+    check(cd::lyric_line_at(lyrics,1.49)==-1 && cd::lyric_line_at(lyrics,1.5)==0);
+    check(cd::lyric_line_at(lyrics,100)==3 && cd::lyric_line_at(lyrics,5)==1);
+    check(cd::lyric_line_at(lyrics,std::numeric_limits<double>::quiet_NaN())==-1);
+    const auto offset=cd::parse_lrc("\xef\xbb\xbf[offset:500]\n[00:01.00]<00:01.00>One <00:01.25>two");
+    check(offset.lines.size()==1 && offset.lines[0].seconds==.5);
+    check(offset.lines[0].words.size()==2 && offset.lines[0].words[1].seconds==.75);
+    check(offset.lines[0].text=="One two");
+    const auto bad=cd::parse_lrc("[99:99]Bad\n[-1:04]Bad\n[0:1.1234]Bad\n[0:2.1x]Bad\n[0:05]Good");
+    check(bad.lines.size()==1 && bad.lines[0].text=="Good");
+    check(cd::parse_lrc(std::string(256*1024+1,'x')).lines.empty());
+    cd::Track song;song.title="Test Song";song.start=0;song.end=75*200;
+    cd::Disc record;record.artist="Test Artist";record.album="Test Album";
+    const std::string response=R"({"trackName":"Test Song","artistName":"Test Artist","duration":200,"syncedLyrics":"[00:01.00]A test phrase\n[00:02.00]Another test phrase"})";
+    check(cd::parse_lyrics_response(response,song,record).synced);
+    song.end=75*210;check(cd::parse_lyrics_response(response,song,record).lines.empty());song.end=75*200;
+    song.title="Other Song";check(cd::parse_lyrics_response(response,song,record).lines.empty());song.title="Test Song";
+    const auto plain=cd::parse_lyrics_response(R"({"trackName":"Test Song","artistName":"Test Artist","duration":200,"plainLyrics":"A test phrase\nAnother phrase"})",song,record);
+    check(!plain.synced && plain.lines.size()==2 && cd::lyric_line_at(plain,10)==-1);
+    check(cd::parse_lyrics_response(R"({"trackName":"Test Song","artistName":"Test Artist","duration":200,"instrumental":true})",song,record).instrumental);
+    check(cd::parse_lyrics_response("{",song,record).lines.empty());
+    check(cd::lyrics_url(song,record).find("track_name=Test%20Song")!=std::string::npos);
+    const auto cache=cd::lyrics_cache_key(song,record);song.end+=75;
+    check(cache.starts_with("lyrics-") && cache!=cd::lyrics_cache_key(song,record));
+    for(unsigned n=0;n<1000;++n)
+    {
+        std::string junk(random()%1000,' ');for(auto &c:junk)c=char(random());
+        cd::parse_lrc(junk);cd::parse_lyrics_response(junk,song,record);
+    }
     cd::Analyzer analyzer;
     for (unsigned i = 0; i < 2048; ++i)
         analyzer.feed(std::sin(2.f * std::numbers::pi_v<float> * 1000 * i / 48000), 0);
