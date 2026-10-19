@@ -5,6 +5,7 @@
 #include "cd/player.hpp"
 #include "cd/dsp.hpp"
 #include "app/scene.hpp"
+#include "app/cover_scene.hpp"
 #include "app/visualizer.hpp"
 #include "app/media_motion.hpp"
 #include "app/spindle.hpp"
@@ -21,6 +22,18 @@ class Screen
     friend struct ScreenInspection;
     hui::gfx::Renderer renderer_;
     Scene scene_;
+    CoverScene cover_scene_;
+    struct ArtworkSurface
+    {
+        GLuint texture = 0;
+        std::shared_ptr<const ArtworkImage> image;
+        float fade = 0;
+        void update(const std::shared_ptr<const ArtworkImage> &, hui::gfx::Renderer &, float);
+        void clear();
+    } disc_surface_, back_surface_, spine_surface_;
+    hui::tween::Spring cover_angle_;
+    bool back_cover_ = false;
+    std::string shown_release_;
     Visualizer visualizer_;
     MediaMotion media_motion_;
     Spindle spindle_;
@@ -36,7 +49,7 @@ class Screen
     hui::tween::Spring settings_amount_;
     hui::tween::Spring album_amount_, cover_focus_amount_, album_scroll_motion_;
     hui::ui::ButtonGroup actions_;
-    hui::gfx::DrawList page_, overlay_;
+    hui::gfx::DrawList page_, overlay_, album_overlay_, volume_overlay_;
     GLuint cover_ = 0, pending_cover_ = 0;
     uint64_t revision_ = UINT64_MAX, cover_revision_ = UINT64_MAX;
     std::string shown_id_;
@@ -55,7 +68,7 @@ class Screen
     std::array<float, 10> eq_positions_{};
     size_t edition_count_ = SIZE_MAX;
     int visual_ = 1;
-    bool lyrics_page_ = false;
+    bool lyrics_page_ = false, last_lyrics_page_ = false;
     std::shared_ptr<const Lyrics> shown_lyrics_;
     struct LyricBlock
     {

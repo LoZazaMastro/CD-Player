@@ -130,6 +130,8 @@ bool Player::start(std::string cache)
         metadata_started_ = worker(metadata_thread_, metadata_entry, this);
     if (started_)
         lyrics_started_ = worker(lyrics_thread_, lyrics_entry, this);
+    if (started_)
+        artwork_started_ = worker(artwork_thread_, artwork_entry, this);
     return started_;
 }
 void Player::stop()
@@ -150,6 +152,11 @@ void Player::stop()
     {
         pthread_join(lyrics_thread_, nullptr);
         lyrics_started_ = false;
+    }
+    if (artwork_started_)
+    {
+        pthread_join(artwork_thread_, nullptr);
+        artwork_started_ = false;
     }
 }
 void *Player::io_entry(void *p)
@@ -311,6 +318,12 @@ void Player::choose_edition(size_t index)
     edition_request_ = index;
     metadata_id_ = snapshot_.disc.id;
     ++metadata_generation_;
+    snapshot_.cover.reset();
+    ++snapshot_.cover_revision;
+    artwork_generation_ = 0;
+    snapshot_.disc_art.reset();
+    snapshot_.back_art.reset();
+    snapshot_.spine_art.reset();
 }
 void Player::render(int16_t *samples, unsigned frames)
 {
@@ -408,6 +421,10 @@ void Player::io_loop()
         snapshot_.disc = {};
         rotation_.reset_track();
         snapshot_.cover.reset();
+        snapshot_.disc_art.reset();
+        snapshot_.back_art.reset();
+        snapshot_.spine_art.reset();
+        artwork_generation_ = 0;
         snapshot_.editions.clear();
         snapshot_.album_info = {};
         snapshot_.album_info_ready = snapshot_.album_info_error = false;
@@ -680,6 +697,87 @@ void Player::io_loop()
     if (drive)
         drive->execute(unlock(), {});
 }
+void *Player::artwork_entry(void *self)
+{
+    static_cast<Player *>(self)->artwork_loop();
+    return nullptr;
+}
+void Player::artwork_loop()
+{
+    uint64_t completed = 0;
+    while (!stop_.load())
+    {
+        Disc disc;
+        uint64_t generation = 0;
+        {
+            std::lock_guard lock(mutex_);
+            generation = artwork_generation_;
+            if (generation && generation != completed && generation == metadata_generation_)
+                disc = snapshot_.disc;
+        }
+        if (disc.release.empty()) { wait(100000); continue; }
+        const auto current = [&]
+        {
+            std::lock_guard lock(mutex_);
+            return !stop_.load() && metadata_generation_ == generation &&
+                snapshot_.disc.id == disc.id && snapshot_.disc.release == disc.release;
+        };
+        const auto fetch = [&](const std::string &url, const std::string &suffix,
+                               std::vector<uint8_t> &bytes, size_t limit)
+        {
+            const auto path = cache_ + "/" + disc.release + suffix;
+            if (get_cache(path, bytes, limit)) return true;
+            for (unsigned attempt = 0; attempt < 2 && current(); ++attempt)
+            {
+                bytes.clear();
+                const int status = http_get(url, bytes, limit);
+                if (status == 200) { write_cache(path, bytes); return true; }
+                if (status != -1 && status != 429 && status != 503) break;
+                for (unsigned i = 0; i < 20 && current(); ++i) wait(100000);
+            }
+            bytes.clear();
+            return false;
+        };
+        std::vector<uint8_t> manifest;
+        if (!fetch("https://coverartarchive.org/release/" + disc.release + "/", ".art-index.json",
+                   manifest, 2u << 20)) { completed = generation; continue; }
+        const auto sources = parse_artwork_sources(
+            {reinterpret_cast<const char *>(manifest.data()), manifest.size()},
+            disc.release, disc.medium_position, disc.medium_count);
+        hui::sys::log("[CD artwork] release=%s medium=%u disc=%d back=%d spine=%d",
+            disc.release.c_str(), disc.medium_position, !sources.disc.empty(),
+            !sources.back.empty(), !sources.spine.empty());
+        std::string previous_url;
+        std::vector<uint8_t> previous_bytes;
+        const auto load = [&](const std::string &url, const std::string &name, ArtworkCrop crop,
+                              std::shared_ptr<const ArtworkImage> Snapshot::*field)
+        {
+            if (url.empty() || !current()) return;
+            std::vector<uint8_t> bytes;
+            if (url == previous_url) bytes = previous_bytes;
+            else
+            {
+                if (!fetch(url, "." + std::to_string(disc.medium_position) + name, bytes, 8u << 20)) return;
+                previous_url = url;
+                previous_bytes = bytes;
+            }
+            auto image = decode_artwork(bytes, crop);
+            if (!image || !current()) return;
+            std::lock_guard lock(mutex_);
+            if (metadata_generation_ != generation || snapshot_.disc.id != disc.id) return;
+            snapshot_.*field = std::move(image);
+            hui::sys::log("[CD artwork] %s ready (%s)", name.c_str(), disc.release.c_str());
+        };
+        load(sources.disc, ".disc-image", ArtworkCrop::disc, &Snapshot::disc_art);
+        load(sources.back, ".back-image", sources.back_has_spines ? ArtworkCrop::back_with_spines : ArtworkCrop::back,
+             &Snapshot::back_art);
+        // A combined tray scan contains two narrow spines. Extract the left
+        // strip; a missing or unsuitable scan leaves the physical edge blank.
+        load(sources.spine, ".spine-image", sources.combined_spine ? ArtworkCrop::spine_from_back : ArtworkCrop::spine,
+             &Snapshot::spine_art);
+        completed = generation;
+    }
+}
 void Player::metadata_loop()
 {
     uint64_t completed = 0;
@@ -744,6 +842,7 @@ void Player::metadata_loop()
             if (metadata_generation_ != generation || snapshot_.disc.id != disc.id)
                 continue;
             snapshot_.disc = disc;
+            artwork_generation_ = generation;
             snapshot_.editions = editions;
             snapshot_.album_info = {};
             snapshot_.album_info_ready = snapshot_.album_info_error = false;

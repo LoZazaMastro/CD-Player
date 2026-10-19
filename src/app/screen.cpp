@@ -69,16 +69,41 @@ float centered_baseline(const gfx::Font &font, std::string_view text, float size
 
 Screen::~Screen()
 {
+    disc_surface_.clear();
+    back_surface_.clear();
+    spine_surface_.clear();
     if (pending_cover_)
         glDeleteTextures(1, &pending_cover_);
     if (cover_)
         glDeleteTextures(1, &cover_);
 }
 
+void Screen::ArtworkSurface::clear()
+{
+    if (texture) glDeleteTextures(1, &texture);
+    texture = 0; fade = 0; image.reset();
+}
+void Screen::ArtworkSurface::update(const std::shared_ptr<const ArtworkImage> &next,
+                                   gfx::Renderer &renderer, float dt)
+{
+    if (image != next)
+    {
+        clear();
+        image = next;
+        if (image && image->width > 0 && image->height > 0 &&
+            image->rgba.size() == size_t(image->width) * size_t(image->height) * 4)
+            texture = renderer.batch().create_texture(image->width, image->height, image->rgba.data());
+        // The first frame is deliberately blank; each surface fades independently.
+        return;
+    }
+    if (texture) fade = std::min(1.f, fade + dt * 1.25f);
+}
+
 void Screen::apply_accent(unsigned index)
 {
     accent_index_ = std::min(index, unsigned(accent_colors.size()-1));
     accent = gfx::Color::rgb(accent_colors[accent_index_].rgb);
+    visualizer_.accent(accent);
     theme_.primary = theme_.accent = theme_.focus = accent;
     tracks_.style.theme = actions_.style.theme = preferences_.style.theme = speakers_.style.theme = theme_;
 }
@@ -103,7 +128,7 @@ bool Screen::load_font(const std::string &path, gfx::Font &font, ui::FontRef &re
 
 bool Screen::init(const std::string &assets)
 {
-    if (!renderer_.init() || !scene_.init(assets))
+    if (!renderer_.init() || !scene_.init(assets) || !cover_scene_.init())
         return false;
     visualizer_.assets(assets);
 
@@ -357,6 +382,20 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
     visual_ = int(snapshot.visualization);
 
     const bool medium = !snapshot.disc.id.empty() || snapshot.state == State::loading;
+    if (snapshot.disc.release != shown_release_ || snapshot.disc.id != shown_id_)
+    {
+        shown_release_ = snapshot.disc.release;
+        back_cover_ = false;
+        cover_angle_.snap(0);
+    }
+    cover_angle_.target = back_cover_ ? 3.14159265f : 0.f;
+    if (reduced_motion_) cover_angle_.snap(cover_angle_.target);
+    else cover_angle_.update(dt, 9);
+    if (back_surface_.image != snapshot.back_art || spine_surface_.image != snapshot.spine_art)
+        cover_scene_.invalidate();
+    disc_surface_.update(snapshot.disc_art, renderer_, dt);
+    back_surface_.update(snapshot.back_art, renderer_, dt);
+    spine_surface_.update(snapshot.spine_art, renderer_, dt);
     spindle_.update(dt, snapshot.playing || snapshot.state == State::loading,
                     reduced_motion_, medium && media_motion_.disc() < .999f);
     if (snapshot.revision != revision_)
@@ -405,6 +444,7 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
 
     if (snapshot.cover_revision != cover_revision_)
     {
+        cover_scene_.invalidate();
         cover_revision_ = snapshot.cover_revision;
         if (pending_cover_)
         {
@@ -421,7 +461,9 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
                 cover_ = next;
         }
     }
-    media_motion_.update(medium, snapshot.cover && cover_ && !pending_cover_, dt, reduced_motion_);
+    const bool replacing_front = pending_cover_ || (!snapshot.cover && cover_);
+    media_motion_.update(medium, !replacing_front &&
+        (cover_ || back_surface_.texture || spine_surface_.texture), dt, reduced_motion_);
     if (media_motion_.cover() < .001f)
     {
         if (pending_cover_)
@@ -601,8 +643,8 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
     if (input.is_pressed(Action::touch))
     {
         full_ = !full_;
-        lyrics_page_ = false;
-        player.lyrics_visible(false);
+        lyrics_page_ = full_ && last_lyrics_page_;
+        player.lyrics_visible(lyrics_page_);
         album_panel_ = false;
         settings_ = false;
         speaker_page_ = false;
@@ -763,14 +805,15 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
         if (input.is_pressed(Action::r3))
         {
             lyrics_page_ = !lyrics_page_;
+            last_lyrics_page_ = lyrics_page_;
             player.lyrics_visible(lyrics_page_);
             feedback.play(audio::Cue::select);
             return;
         }
         if (input.is_pressed(Action::back))
         {
-            if (lyrics_page_) lyrics_page_ = false;
-            else full_ = false;
+            full_ = false;
+            lyrics_page_ = false;
             player.lyrics_visible(false);
             return;
         }
@@ -795,6 +838,15 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
         return;
     }
 
+    if (input.is_pressed(Action::l3))
+    {
+        if (cover_ || back_surface_.texture || spine_surface_.texture)
+        {
+            back_cover_ = !back_cover_;
+            feedback.play(audio::Cue::select);
+        }
+        return;
+    }
     if (cover_focus_)
     {
         if (input.nav == Direction::right || input.is_pressed(Action::back))
@@ -850,6 +902,8 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
 
             case 3:
                 full_ = true;
+                lyrics_page_ = last_lyrics_page_;
+                player.lyrics_visible(lyrics_page_);
                 idle_ = 0;
                 break;
 
@@ -882,6 +936,8 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
 {
     page_.clear();
     overlay_.clear();
+    album_overlay_.clear();
+    volume_overlay_.clear();
 
     page_.rounded_rect({0, 0, 1920, 1080}, 0, gfx::Color::rgb(0));
 
@@ -1007,20 +1063,21 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         {
             const float arrival = media_motion_.disc(), y = 230 + (1 - arrival) * 950;
             page_.push_clip({0, 205, 868, 875});
-            const GLuint disc = scene_.render(spindle_.angle(), 1280, 1280);
+            const GLuint disc = scene_.render(spindle_.angle(), 1280, 1280,
+                disc_surface_.texture, hui::tween::smoothstep(disc_surface_.fade));
             // The bare disc is centred in the artwork space; reveal moves it behind the cover.
             const float disc_x = 137 + 148 * media_motion_.cover();
             page_.image(disc, {disc_x, y - 25, 540, 540}, gfx::kCanvasUv, {1, 1, 1, arrival});
-            if (cover_ && media_motion_.cover() > .001f)
+            if ((cover_ || back_surface_.texture || spine_surface_.texture) && media_motion_.cover() > .001f)
             {
                 const float reveal = media_motion_.cover(), scale = 1 + (1 - reveal) * .16f + .015f * cover_focus_amount_.value;
                 page_.push_transform(scale, 336, 489, 0, 0);
                 page_.push_opacity(reveal);
                 page_.shadow({112, 293, 448, 448}, 8, 46, {0, 0, 0, .6f});
-                page_.image(cover_, {112, 265, 448, 448}, gfx::kFullUv, {1, 1, 1, 1}, 8);
-                page_.bordered_rect({112, 265, 448, 448}, 8, {0, 0, 0, 0}, 1,
-                                    gfx::Color::rgb(0xffffff, .14f));
-                page_.gradient_rect_h({112, 265, 10, 448}, 2, {1, 1, 1, .16f}, {0, 0, 0, 0});
+                const auto album_case = cover_scene_.render(cover_angle_.value, cover_,
+                    back_surface_.texture, spine_surface_.texture,
+                    hui::tween::smoothstep(back_surface_.fade), hui::tween::smoothstep(spine_surface_.fade));
+                page_.image(album_case, {112, 265, 448, 448}, gfx::kCanvasUv, {1, 1, 1, 1});
                 if (cover_focus_amount_.value > .001f)
                     page_.bordered_rect({106, 259, 460, 460}, 12, {0, 0, 0, 0}, 2,
                                         accent.with_alpha(cover_focus_amount_.value));
@@ -1094,6 +1151,8 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         hints.push_back({ui::Button::l1, "Track", ui::Button::r1});
         hints.push_back({ui::Button::l2, "10 sec", ui::Button::r2});
         hints.push_back({ui::Button::options, "Settings"});
+        if (cover_ || back_surface_.texture || spine_surface_.texture)
+            hints.push_back({ui::Button::l3, "Flip"});
 
         ui::HintLayout layout;
         layout.size = 32;
@@ -1137,16 +1196,16 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
     if (album_amount_.value > .001f && !equalizer_page_)
     {
         const float amount = std::clamp(album_amount_.value, 0.f, 1.f);
-        overlay_.clear();
+        album_overlay_.clear();
         renderer_.glass();
-        overlay_.image(renderer_.glass_texture(), {0, 0, 1920, 1080}, gfx::kCanvasUv,
+        album_overlay_.image(renderer_.glass_texture(), {0, 0, 1920, 1080}, gfx::kCanvasUv,
                        {1, 1, 1, amount});
-        overlay_.rounded_rect({0, 0, 1920, 1080}, 0, {0, 0, 0, .36f * amount});
-        overlay_.push_opacity(amount);
-        overlay_.push_transform(1, 0, 0, -(1 - amount) * 1850, 0);
+        album_overlay_.rounded_rect({0, 0, 1920, 1080}, 0, {0, 0, 0, .36f * amount});
+        album_overlay_.push_opacity(amount);
+        album_overlay_.push_transform(1, 0, 0, -(1 - amount) * 1850, 0);
         // Album card with a clipped year behind its content.
-        overlay_.shadow({96, 78, 1036.8f, 930}, 26, 44, {0, 0, 0, .48f});
-        overlay_.rounded_rect({96, 78, 1036.8f, 930}, 26, gfx::Color::rgb(0x1c1c1c));
+        album_overlay_.shadow({96, 78, 1036.8f, 930}, 26, 44, {0, 0, 0, .48f});
+        album_overlay_.rounded_rect({96, 78, 1036.8f, 930}, 26, gfx::Color::rgb(0x1c1c1c));
         auto centered_baseline = [&](std::string_view text, float size, float center)
         {
             std::vector<gfx::GlyphQuad> glyphs;
@@ -1170,15 +1229,15 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         album_scroll_max_ = std::max(0.f, description_bottom + 20 - 934);
         album_scroll_ = std::clamp(album_scroll_, 0.f, album_scroll_max_);
         // All album content shares one viewport and one scroll transform.
-        overlay_.push_clip({122, 104, 984.8f, 830});
+        album_overlay_.push_clip({122, 104, 984.8f, 830});
         const float scroll_offset = std::clamp(album_scroll_motion_.value, 0.f, album_scroll_max_);
-        overlay_.push_transform(1, 0, 0, 0, -scroll_offset);
+        album_overlay_.push_transform(1, 0, 0, 0, -scroll_offset);
         // Paint the year first, behind cover, artist, album and description.
-        ui::text(overlay_, fonts_.display, snapshot.disc.year, 1084.8f,
+        ui::text(album_overlay_, fonts_.display, snapshot.disc.year, 1084.8f,
                  centered_baseline(snapshot.disc.year, 240.24f, 238.64f), 240.24f,
                  accent.with_alpha(.20f), gfx::Align::right);
         if (cover_)
-            overlay_.image(cover_, {144, 126, 225.28f, 225.28f}, gfx::kFullUv, {1, 1, 1, 1}, 8);
+            album_overlay_.image(cover_, {144, 126, 225.28f, 225.28f}, gfx::kFullUv, {1, 1, 1, 1}, 8);
         // Wrap complete names, then shrink both sizes together until the
         // stacked artist/album heading fits inside the cover's 225.28px height.
         struct HeadingBlock
@@ -1221,18 +1280,18 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         }
         const float heading_top = 126 + (225.28f - heading_height) * .5f;
         ui::ParagraphLines artist_lines{artist.lines, false}, album_lines{album.lines, false};
-        ui::paragraph(overlay_, fonts_.display, artist_lines, 417.28f,
+        ui::paragraph(album_overlay_, fonts_.display, artist_lines, 417.28f,
                       heading_top - artist.top, artist.size, artist.leading, muted);
-        ui::paragraph(overlay_, fonts_.display, album_lines, 417.28f,
+        ui::paragraph(album_overlay_, fonts_.display, album_lines, 417.28f,
                       heading_top + artist.bottom - artist.top + gap - album.top,
                       album.size, album.leading, ink);
-        ui::paragraph(overlay_, fonts_.display, description, 144, 424.4f, 33.6f, 51.6f, ink);
-        overlay_.pop_transform();
-        overlay_.pop_clip();
+        ui::paragraph(album_overlay_, fonts_.display, description, 144, 424.4f, 33.6f, 51.6f, ink);
+        album_overlay_.pop_transform();
+        album_overlay_.pop_clip();
         if (album_scroll_max_ > 0)
         {
             const float height = 830 * 830 / (album_scroll_max_ + 830);
-            overlay_.rounded_rect({1108.8f, 104 + (830-height)*scroll_offset/album_scroll_max_, 2, height},
+            album_overlay_.rounded_rect({1108.8f, 104 + (830-height)*scroll_offset/album_scroll_max_, 2, height},
                                   1, muted.with_alpha(.5f));
         }
         // Back stays fixed outside the content scroll.
@@ -1240,21 +1299,21 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         ui::HintLayout layout;
         layout.size = 28; layout.text_size = 20;
         layout.cy = 963 - layout.text_size * .35f;
-        ui::draw_hints(overlay_, fonts_, dot_style(), hints, 1, 144, false, layout);
-        overlay_.pop_transform();
-        overlay_.pop_opacity();
-        renderer_.draw(overlay_);
+        ui::draw_hints(album_overlay_, fonts_, dot_style(), hints, 1, 144, false, layout);
+        album_overlay_.pop_transform();
+        album_overlay_.pop_opacity();
+        renderer_.draw(album_overlay_);
     }
     if (volume_feedback_ > 0)
     {
-        overlay_.clear();
+        volume_overlay_.clear();
         const auto label = "Volume " + std::to_string(int(std::round(snapshot.volume*100))) + "%";
         const float opacity = std::min(1.f, volume_feedback_/.3f);
         const float text_width = fonts_.display.measure(label, 23);
-        overlay_.rounded_rect({1808-text_width, 997, text_width+32, 48}, 10, {0,0,0,.8f*opacity});
-        ui::text(overlay_, fonts_.display, label, 1824, 1025, 23,
+        volume_overlay_.rounded_rect({1808-text_width, 997, text_width+32, 48}, 10, {0,0,0,.8f*opacity});
+        ui::text(volume_overlay_, fonts_.display, label, 1824, 1025, 23,
                  ink.with_alpha(opacity), gfx::Align::right);
-        renderer_.draw(overlay_);
+        renderer_.draw(volume_overlay_);
     }
     (void)dsp;
     renderer_.present(framebuffer, width, height);

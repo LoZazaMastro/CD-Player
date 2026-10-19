@@ -31,6 +31,7 @@ CONTROLS
 D-pad: navigate. Cross: select. Square: play/pause. Triangle: eject.
 L1/R1: previous/next track. L2/R2: seek backward/forward by 10 seconds.
 Touchpad: fullscreen visualizer. Options: settings. Circle: back.
+L3 on the album page: turn the case over; press again to return to its front.
 Right stick up/down: adjust the master volume from any screen.
 Hold Options + Circle to close the application.
 A Play icon in the accent color replaces the number of the track currently playing.
@@ -79,6 +80,8 @@ Temporary server errors trigger automatic retries while the loading message
 stays visible. Leaving lyrics or changing tracks cancels further retries.
 No song lyrics or recordings are bundled with the app.
 Returning to the current track's loaded lyrics opens them without a loading flash.
+Circle returns directly to the album page from either fullscreen mode.
+Reopening fullscreen restores the last lyrics or visualizer choice.
 
 Autoplay disc starts the first audio track after a disc is detected. It is off
 by default and can be enabled in settings. Changing the toggle does not start
@@ -90,6 +93,8 @@ automatically.
 Changes are checked for saving once per second and restored at the next launch.
 Application updates preserve these settings outside the installation folder.
 Accent color offers 40 named colors with a swatch. Changes apply immediately.
+Visualizer colors follow the same accent. Right-stick volume changes leave
+open settings and album panels in place.
 
 ALBUM METADATA
 Internet access is needed for online album information and covers.
@@ -100,6 +105,10 @@ The cover is selectable only when a real description is available.
 Online responses and artwork are cached. Source attribution is retained in
 the cache metadata and project documentation.
 No recordings or cover-art files from the test CDs are bundled in the app.
+Printed disc labels, back covers and spines are downloaded for the selected
+edition when available. Each image fades in independently. Missing images
+leave that surface blank. A combined back/spine scan is split into its
+central inlay and a narrow folded edge for the three-dimensional case.
 
 VIDEO AND LOGS
 The tested Media configuration runs at approximately 60 Hz on the console.

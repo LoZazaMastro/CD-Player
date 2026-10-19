@@ -16,6 +16,7 @@ std::atomic<unsigned> wakes{0}, ejections{0}, reads{0};
 std::atomic<bool> lyrics_enabled{false}, lyrics_busy{false};
 std::atomic<unsigned> lyric_requests{0};
 std::atomic<unsigned> transient_lyrics_failures{0};
+std::atomic<unsigned> artwork_requests{0};
 class FakeDrive : public cd::Drive
 {
   public:
@@ -144,6 +145,17 @@ std::unique_ptr<Drive> open_drive(const std::string &, std::string &)
 }
 int http_get(const std::string &url, std::vector<uint8_t> &out, size_t limit)
 {
+    if(lyrics_enabled.load() && url=="https://coverartarchive.org/release/12345678-1234-1234-1234-123456789abc/")
+    {
+        const std::string body=R"({"images":[{"id":100,"types":["Medium"],"approved":true},{"id":101,"types":["Back","Spine"],"approved":true}]})";
+        out.assign(body.begin(),body.end());++artwork_requests;return 200;
+    }
+    if(lyrics_enabled.load() && (url.ends_with("/100-1200.jpg") || url.ends_with("/101-1200.jpg")))
+    {
+        std::ifstream fixture("tests/fixtures/artwork-tray.png",std::ios::binary);
+        out.assign(std::istreambuf_iterator<char>(fixture),{});
+        require(out.size()<=limit,"artwork response bounded");++artwork_requests;return 200;
+    }
     if(lyrics_enabled.load() && url.starts_with("https://lrclib.net/"))
     {
         ++lyric_requests;lyrics_busy.store(true);
@@ -304,7 +316,8 @@ int main()
     const std::string lyric_cache="build/player-lyrics-test-data";
     std::filesystem::create_directories(lyric_cache);
     for(const auto &file:std::filesystem::directory_iterator(lyric_cache))
-        if(file.is_regular_file() && file.path().filename().string().starts_with("lyrics-"))
+        if(file.is_regular_file() && (file.path().filename().string().starts_with("lyrics-") ||
+           file.path().filename().string().starts_with("12345678-")))
             std::filesystem::remove(file.path());
     {
         std::ofstream metadata(lyric_cache+"/Eoi6K6eMdKcHaqJ9LHWKtlPgElI-.json");
@@ -316,6 +329,13 @@ int main()
     for(unsigned n=0;n<300 && lyric_player.snapshot().disc.artist.empty();++n)
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     require(lyric_player.snapshot().disc.artist=="Fixture Artist","lyrics use resolved album metadata");
+    for(unsigned n=0;n<300 && !lyric_player.snapshot().spine_art;++n)
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    const auto artwork=lyric_player.snapshot();
+    require(artwork.disc_art && artwork.back_art && artwork.spine_art,"background worker loads all three physical surfaces");
+    require(artwork.disc_art->width==64 && artwork.back_art->width==72 && artwork.spine_art->width==4,
+            "worker uses independent disc/back/spine preparation");
+    require(artwork_requests.load()==3,"combined back/spine scan is downloaded once per recognized release");
     require(lyric_requests.load()==0,"no lyrics request until page is opened");
     transient_lyrics_failures.store(1);
     lyric_player.lyrics_visible(true);

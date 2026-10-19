@@ -58,6 +58,7 @@ $(RUNTIME): $(RUNTIME_INPUTS)
 	@bash tools/rebuild-libc.sh
 test:
 	@bash tools/test-core.sh
+	@bash tools/test-artwork.sh
 	@bash tools/test-motion.sh
 	@bash tools/test-visual-rotation.sh
 	@bash tools/test-player.sh

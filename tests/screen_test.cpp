@@ -59,6 +59,17 @@ struct ScreenInspection
         return true;
     }
     static bool lyrics(const Screen &s) { return s.lyrics_page_; }
+    static bool fullscreen(const Screen &s) { return s.full_; }
+    static bool panels(const Screen &s)
+    {
+        return s.settings_ && !s.overlay_.empty() && !s.volume_overlay_.empty() &&
+            s.overlay_.instances().size()>s.volume_overlay_.instances().size();
+    }
+    static float flip(const Screen &s) { return s.cover_angle_.value; }
+    static float disc_fade(const Screen &s) { return s.disc_surface_.fade; }
+    static float back_fade(const Screen &s) { return s.back_surface_.fade; }
+    static float spine_fade(const Screen &s) { return s.spine_surface_.fade; }
+    static bool front_settled(const Screen &s) { return s.cover_ && !s.pending_cover_ && s.media_motion_.cover()>.99f; }
     static int line(const Screen &s) { return s.current_lyric_; }
     static float lyric_error(const Screen &s) { return s.lyric_scroll_.target-s.lyric_scroll_.value; }
     static size_t glyphs(const Screen &s)
@@ -89,6 +100,22 @@ int main()
     {
         cd::Screen screen; cd::Dsp dsp; cd::Player player;
         require(screen.init("assets"),"production screen initializes with new font");
+        {
+            hui::gfx::GlBatch batch;
+            std::vector<uint8_t> red(64*64*4,255),green=red,blue=red;
+            for(size_t i=0;i<red.size();i+=4){red[i+1]=red[i+2]=0;green[i]=green[i+2]=0;blue[i]=blue[i+1]=0;}
+            const auto front=batch.create_texture(64,64,red.data()), back_art=batch.create_texture(64,64,green.data()), spine_art=batch.create_texture(64,64,blue.data());
+            cd::CoverScene jewel;require(jewel.init(),"case shader initializes");
+            const auto sample=[&](float angle,float fade){const auto texture=jewel.render(angle,front,back_art,spine_art,fade,fade,128);glBindTexture(GL_TEXTURE_2D,texture);std::vector<uint8_t> pixels(128*128*4);glGetTexImage(GL_TEXTURE_2D,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels.data());return std::array<uint8_t,4>{pixels[(64*128+64)*4],pixels[(64*128+64)*4+1],pixels[(64*128+64)*4+2],pixels[(64*128+64)*4+3]};};
+            const auto f=sample(0,1),b=sample(3.14159265f,1),s=sample(1.5707963f,1),blank=sample(3.14159265f,0),half=sample(3.14159265f,.5f);
+            std::fprintf(stderr,"Case pixels front=%u/%u/%u/%u back=%u/%u/%u/%u spine=%u/%u/%u/%u GL=%x\n",f[0],f[1],f[2],f[3],b[0],b[1],b[2],b[3],s[0],s[1],s[2],s[3],glGetError());
+            require(f[0]>180 && f[1]<60,"3D case front samples correct texture");
+            require(b[1]>180 && b[0]<60,"3D case back samples correct texture");
+            require(s[2]>180 && s[0]<60,"3D case spine samples correct texture");
+            require(blank[1]<60,"back remains blank at start of fade");
+            require(half[1]>blank[1]+60 && half[1]<b[1]-60,"back artwork visibly dissolves into the plastic surface");
+            glDeleteTextures(1,&front);glDeleteTextures(1,&back_art);glDeleteTextures(1,&spine_art);
+        }
         hui::gfx::Canvas target; require(target.create(1920,1080,1),"offscreen framebuffer ready");
         cd::Snapshot state;state.state=cd::State::ready;state.disc.id="screen-test";
         state.disc.album="Test album";state.track=1;state.playing=true;state.revision=1;
@@ -143,6 +170,16 @@ int main()
         state.seconds=1.5;settle();require(cd::ScreenInspection::line(screen)==0,"backward seek selects earlier phrase");
         screen.handle(r3,feedback,player,dsp);require(!cd::ScreenInspection::lyrics(screen),"R3 returns to visualizer");
         screen.handle(r3,feedback,player,dsp);
+        hui::InputFrame leave;leave.pressed=hui::action_bit(hui::Action::back);
+        screen.handle(leave,feedback,player,dsp);
+        require(!cd::ScreenInspection::fullscreen(screen),"Circle from lyrics returns directly to album page");
+        hui::InputFrame touch;touch.pressed=hui::action_bit(hui::Action::touch);
+        screen.handle(touch,feedback,player,dsp);
+        require(cd::ScreenInspection::fullscreen(screen) && cd::ScreenInspection::lyrics(screen),"fullscreen reopens last lyrics choice");
+        screen.handle(r3,feedback,player,dsp);screen.handle(leave,feedback,player,dsp);
+        screen.handle(touch,feedback,player,dsp);
+        require(cd::ScreenInspection::fullscreen(screen) && !cd::ScreenInspection::lyrics(screen),"fullscreen also remembers visualizer choice");
+        screen.handle(r3,feedback,player,dsp);
         hui::InputFrame menu;menu.pressed=hui::action_bit(hui::Action::menu);
         screen.handle(menu,feedback,player,dsp);require(!cd::ScreenInspection::lyrics(screen),"settings leave lyrics mode");
         settle();dsp.upmix(true);settle();
@@ -179,6 +216,11 @@ int main()
         require(cd::ScreenInspection::volume_help(screen),"Volume shows right-stick instruction in settings help area");
         hui::InputFrame stick;stick.stick2_y=-1;player.volume(.5f);
         screen.handle(stick,feedback,player,dsp);require(player.volume()>.5f,"right stick raises volume within settings");
+        draw();require(cd::ScreenInspection::panels(screen),"volume HUD retains separately queued settings geometry");
+        glBindFramebuffer(GL_FRAMEBUFFER,target.framebuffer());
+        std::array<uint8_t,4> panel_pixel{};
+        glReadPixels(1200,1080-900,1,1,GL_RGBA,GL_UNSIGNED_BYTE,panel_pixel.data());
+        require(panel_pixel[0]>15 && panel_pixel[1]>15,"settings card remains visible in final framebuffer while volume changes");
         screen.preview_preferences(false);screen.preview_fullscreen(false);settle();
         const float before_album=player.volume();stick.stick2_y=1;
         screen.handle(stick,feedback,player,dsp);require(player.volume()<before_album,"right stick lowers volume on album page");
@@ -190,6 +232,27 @@ int main()
         player.volume(1);stick.stick2_y=-1;screen.handle(stick,feedback,player,dsp);require(player.volume()==1,"master volume cannot exceed unity");
         stick.stick2_y=.1f;player.volume(.5f);screen.handle(stick,feedback,player,dsp);require(player.volume()==.5f,"stick deadzone does not change volume");
         state.volume=player.volume();draw();
+        screen.preview_lyrics(false);screen.preview_preferences(false);settle();
+        auto art=std::make_shared<cd::ArtworkImage>();art->width=art->height=64;
+        art->rgba.resize(64*64*4,255);
+        state.disc_art=state.back_art=state.spine_art=art;
+        screen.update(1.f/120,state,dsp);
+        require(cd::ScreenInspection::disc_fade(screen)==0 && cd::ScreenInspection::back_fade(screen)==0 &&
+                cd::ScreenInspection::spine_fade(screen)==0,"all arriving artwork starts transparent");
+        for(int frame=0;frame<36;++frame)screen.update(1.f/120,state,dsp);
+        require(cd::ScreenInspection::disc_fade(screen)>.3f && cd::ScreenInspection::disc_fade(screen)<.7f &&
+                cd::ScreenInspection::back_fade(screen)>.3f && cd::ScreenInspection::spine_fade(screen)<.7f,"disc, back and spine fade progressively at 120 Hz");
+        hui::InputFrame l3;l3.pressed=hui::action_bit(hui::Action::l3);
+        screen.handle(l3,feedback,player,dsp);screen.update(1.f/120,state,dsp);
+        require(cd::ScreenInspection::flip(screen)>0 && cd::ScreenInspection::flip(screen)<1,"L3 starts gradual physical case rotation");
+        settle();require(std::abs(cd::ScreenInspection::flip(screen)-3.14159265f)<.001f,"L3 settles on downloaded back");draw();
+        screen.handle(l3,feedback,player,dsp);settle();require(cd::ScreenInspection::flip(screen)==0,"L3 flips back to front");
+        state.cover_width=state.cover_height=64;
+        state.cover=std::make_shared<const std::vector<uint8_t>>(64*64*4,220);++state.cover_revision;settle();
+        state.cover=std::make_shared<const std::vector<uint8_t>>(64*64*4,180);++state.cover_revision;settle();settle();
+        require(cd::ScreenInspection::front_settled(screen),"front replacement completes while back and spine remain available");
+        state.back_art.reset();state.spine_art.reset();screen.update(1.f/120,state,dsp);draw();
+        require(cd::ScreenInspection::back_fade(screen)==0 && cd::ScreenInspection::spine_fade(screen)==0,"missing surfaces stay blank independently");
     }
     eglMakeCurrent(display,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
     eglDestroyContext(display,context);eglTerminate(display);

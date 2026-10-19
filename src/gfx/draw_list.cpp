@@ -12,6 +12,35 @@
 namespace hui::gfx
 {
 
+void DrawList::recolor_chromatic(Color accent, size_t first_instance, size_t first_vertex)
+{
+    const float peak = std::max({accent.r,accent.g,accent.b});
+    const float floor = std::min({accent.r,accent.g,accent.b});
+    const float range = peak-floor;
+    const float saturation = peak>0 ? range/peak : 0;
+    const float hue[] = {range>0?(accent.r-floor)/range:1,
+                         range>0?(accent.g-floor)/range:1,
+                         range>0?(accent.b-floor)/range:1};
+    const auto recolor = [&](float *c)
+    {
+        const float high=std::max({c[0],c[1],c[2]}), low=std::min({c[0],c[1],c[2]});
+        if(high-low < .015f) return;
+        const float chroma=std::min(high-low, high*saturation), base=high-chroma;
+        for(unsigned i=0;i<3;++i)c[i]=base+chroma*hue[i];
+    };
+    for(size_t i=first_instance;i<instances_.size();++i)
+    {
+        auto &item=instances_[i];
+        if(item.params[3]==float(Shape::image))continue;
+        recolor(item.color_top);recolor(item.color_bottom);recolor(item.border_color);
+    }
+    for(size_t i=first_vertex;i<mesh_.size();++i)
+    {
+        float rgb[]={mesh_[i].r,mesh_[i].g,mesh_[i].b};recolor(rgb);
+        mesh_[i].r=rgb[0];mesh_[i].g=rgb[1];mesh_[i].b=rgb[2];
+    }
+}
+
 namespace
 {
 

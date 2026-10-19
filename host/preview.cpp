@@ -194,6 +194,35 @@ int main()
     snapshot.cover_width=w;snapshot.cover_height=h;stbi_image_free(album_pixels);
     ++snapshot.revision;++snapshot.cover_revision;
     for(int i=0;i<180;++i)screen.update(1.f/60,snapshot,dsp);
+    if (std::getenv("CD_PLAYER_ARTWORK_PREVIEW"))
+    {
+        const auto load_art=[](const char *path,cd::ArtworkCrop crop)
+        {
+            std::ifstream file(path,std::ios::binary);
+            const std::vector<uint8_t> bytes((std::istreambuf_iterator<char>(file)),{});
+            return cd::decode_artwork(bytes,crop);
+        };
+        snapshot.playing=false;
+        snapshot.disc_art=load_art("build/disc-art-research/blunderbuss-disc.jpg",cd::ArtworkCrop::disc);
+        snapshot.back_art=load_art("build/disc-art-research/blunderbuss-back.jpg",cd::ArtworkCrop::back_with_spines);
+        snapshot.spine_art=load_art("build/disc-art-research/blunderbuss-back.jpg",cd::ArtworkCrop::spine_from_back);
+        screen.update(1.f/120,snapshot,dsp);capture("artwork-loading");
+        for(int frame=0;frame<48;++frame)screen.update(1.f/120,snapshot,dsp);
+        capture("artwork-fade");
+        for(int frame=0;frame<240;++frame)screen.update(1.f/120,snapshot,dsp);
+        capture("artwork-front");
+        cd::Player art_player;hui::ui::Feedback art_feedback;
+        hui::InputFrame flip;flip.pressed=hui::action_bit(hui::Action::l3);
+        screen.handle(flip,art_feedback,art_player,dsp);
+        for(int frame=0;frame<8;++frame)screen.update(1.f/60,snapshot,dsp);
+        capture("artwork-turn");
+        for(int frame=0;frame<12;++frame)screen.update(1.f/60,snapshot,dsp);
+        capture("artwork-turn-back");
+        for(int frame=0;frame<160;++frame)screen.update(1.f/60,snapshot,dsp);
+        capture("artwork-back");
+        screen.handle(flip,art_feedback,art_player,dsp);
+        for(int frame=0;frame<180;++frame)screen.update(1.f/60,snapshot,dsp);
+    }
     if (std::getenv("CD_PLAYER_RELEASE_GALLERY"))
     {
         snapshot.seconds=45;

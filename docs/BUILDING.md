@@ -54,6 +54,11 @@ retry; repeated R3 reopening checks reuse of the ready lyrics object without
 publishing a loading state. UI checks also cover full-width two-digit gain
 labels, instant selection of all 40 accents, and right-stick master volume on
 album, settings, visualizer and lyrics screens.
+Artwork checks cover exact-release and disc-number matching, missing images,
+bounded malformed responses, and separate tray/spine crops. Framebuffer checks
+verify front/back/spine texture selection and that changing volume preserves
+an open settings panel. Host previews also exercise independent artwork fades,
+the L3 case rotation, and remembered fullscreen lyrics/visualizer navigation.
 
 For UI snapshots, fetch the public album metadata and artwork into the ignored
 preview cache. No album artwork or audio recording is part of the application

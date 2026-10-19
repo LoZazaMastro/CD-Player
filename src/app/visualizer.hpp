@@ -24,6 +24,7 @@ class Visualizer
     unsigned beat_ = 0;
     ArchiveStudies archive_;
     std::array<float,32> bands_{};
+    hui::gfx::Color accent_ = hui::gfx::Color::rgb(0xd71920);
     float past(unsigned band, float age) const;
     void orbital(hui::gfx::DrawList &, float y, int study) const;
     void assembly(hui::gfx::DrawList &, float y, int study) const;
@@ -33,6 +34,7 @@ class Visualizer
     void update(const std::array<float, 32> &, float dt, bool playing, bool reduced_motion);
     void assets(const std::string &path) { archive_.assets(path); }
     void waveform(const std::array<float,256> &value) { archive_.waveform(value); }
+    void accent(hui::gfx::Color color) { accent_ = color; }
     static std::string name(unsigned);
     static std::vector<std::string> names();
     void draw(hui::gfx::DrawList &, int selection, bool particles, const hui::ui::Fonts &);

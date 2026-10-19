@@ -30,11 +30,13 @@ struct Disc
     unsigned first = 0, last = 0;
     uint32_t leadout = 0;
     std::string id, album = "CD Audio", artist, year, release;
+    unsigned medium_position=1, medium_count=1;
 };
 struct Release
 {
     std::string id, album, artist, date, country, description;
     std::vector<Track> tracks;
+    unsigned medium_position=1, medium_count=1;
 };
 struct AlbumInfo
 {

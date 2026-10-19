@@ -117,6 +117,7 @@ float button_width(Button button, float size)
     case Button::l2:
     case Button::r2:
     case Button::r3:
+    case Button::l3:
         return size * 1.3f;
     case Button::options:
         return size * 1.05f;
@@ -135,7 +136,7 @@ void draw_button(gfx::DrawList &list, const Fonts &fonts, const GlyphStyle &styl
     const float w = button_width(button, size);
     const float cx = x + w * 0.5f;
     if(style.dot_matrix){
-        const char* caption=button==Button::l1?"L1":button==Button::r1?"R1":button==Button::l2?"L2":button==Button::r2?"R2":button==Button::r3?"R3":nullptr;
+        const char* caption=button==Button::l1?"L1":button==Button::r1?"R1":button==Button::l2?"L2":button==Button::r2?"R2":button==Button::r3?"R3":button==Button::l3?"L3":nullptr;
         if(caption){text(list,fonts.display,caption,cx,cy+size*.25f,size*.72f,style.ink,gfx::Align::center);return;}
         const float pitch=size/15;
         for(int row=-6;row<=6;++row)for(int col=-6;col<=6;++col){
@@ -207,6 +208,9 @@ void draw_button(gfx::DrawList &list, const Fonts &fonts, const GlyphStyle &styl
         return;
     case Button::r3:
         stick(list, fonts, style, "R3", cx, cy, size);
+        return;
+    case Button::l3:
+        stick(list, fonts, style, "L3", cx, cy, size);
         return;
     case Button::dpad:
     {

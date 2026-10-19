@@ -26,16 +26,18 @@ Designed by **Andrea Sgarro**.
 - Find album artwork, artist, year, track titles and editions through MusicBrainz and Cover Art Archive. CD-Text is used when available.
 - Open the album cover to read a description, when one is available. Notes come from MusicBrainz or its linked English Wikipedia article.
 - Enjoy a reflective 3D disc that enters with the album, accelerates into playback and slows down gently when paused.
+- When available for your edition, the printed CD label fades onto the spinning disc. Press **L3** to turn the 3D case over and see its back and spine. Missing artwork stays blank.
 - Choose from **161 individual audio-reactive visualizers**, one at a time, or let the app shuffle them when the track changes.
 - Use **OLED mode** to hide fullscreen labels, gently move the effect, and switch to a black screen after a minute of inactivity while playback is stopped.
 - Adjust a ten-band equalizer, volume, gapless playback and optional stereo-to-7.1 upmix while listening.
 - Balance all eight speakers independently in Speaker setup, including the front pair, center, surround, side and subwoofer channels.
 - Read lyrics in Doto with R3 from the fullscreen visualizer. Timed phrases follow the music when available through LRCLIB.
+- **Circle** returns straight from lyrics to the album page. Reopening fullscreen restores your last lyrics or visualizer choice.
 - Enable **Autoplay disc** if you want a newly inserted CD to start on its own.
 - Hide the Eject button if you prefer: the remaining buttons fill the same space, while their icons keep the same size.
 - The track list brings the playing track into view when it changes. You can then browse freely without the list pulling you back.
 - Keep your settings and chosen visualizer between launches. All interface text is in English.
-- Choose an accent from 40 named colors. The interface changes immediately and remembers your choice.
+- Choose an accent from 40 named colors. The interface and visualizers change immediately and remember your choice.
 
 ## A quiet interface
 
@@ -101,6 +103,7 @@ depends on the USB bridge, drive firmware and console environment.
 | L2 / R2 | Seek backward / forward by 10 seconds |
 | Touchpad click | Enter / leave the fullscreen visualizer |
 | R3, in fullscreen | Switch between the visualizer and lyrics |
+| L3, on the album page | Turn the case over; press again to return to the front |
 | Right stick up / down | Raise / lower the master volume from any screen |
 | Options | Open settings |
 | Circle | Back |

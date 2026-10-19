@@ -8,6 +8,7 @@
 #include "cd/sound.hpp"
 #include "cd/dsp.hpp"
 #include "cd/lyrics.hpp"
+#include "cd/artwork.hpp"
 #include "cd/visual_rotation.hpp"
 #include <atomic>
 #include <algorithm>
@@ -41,6 +42,7 @@ struct Snapshot
     float volume = 1;
     uint64_t revision = 0, cover_revision = 0, underruns = 0;
     std::shared_ptr<const std::vector<uint8_t>> cover;
+    std::shared_ptr<const ArtworkImage> disc_art, back_art, spine_art;
     int cover_width = 0, cover_height = 0;
     std::vector<Release> editions;
     AlbumInfo album_info;
@@ -67,8 +69,9 @@ class Player
     unsigned gap_frames_ = 0;
     uint64_t previous_audio_position_ = UINT64_MAX, previous_audio_epoch_ = 0,
              last_gap_ = UINT64_MAX;
-    bool started_ = false, metadata_started_ = false, lyrics_started_ = false;
+    bool started_ = false, metadata_started_ = false, lyrics_started_ = false, artwork_started_ = false;
     pthread_t io_thread_{}, metadata_thread_{}, lyrics_thread_{};
+    pthread_t artwork_thread_{};
     std::atomic<bool> lyrics_visible_{false};
     std::string lyrics_key_;
     std::string lyrics_disc_, lyrics_title_, lyrics_artist_, lyrics_album_;
@@ -83,13 +86,16 @@ class Player
     std::string metadata_id_;
     size_t edition_request_ = 0;
     uint64_t metadata_generation_ = 0;
+    uint64_t artwork_generation_ = 0;
     void io_loop();
     void metadata_loop();
     void lyrics_loop();
+    void artwork_loop();
     void set_state(State, std::string);
     static void *io_entry(void *);
     static void *metadata_entry(void *);
     static void *lyrics_entry(void *);
+    static void *artwork_entry(void *);
 
   public:
     ~Player();

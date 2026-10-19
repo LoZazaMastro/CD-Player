@@ -129,6 +129,9 @@ class DrawList
 {
   public:
     void clear();
+    // Colorize only the newly appended colored geometry, preserving neutrals,
+    // opacity, shape positions and texture contents.
+    void recolor_chromatic(Color accent, size_t first_instance = 0, size_t first_vertex = 0);
 
     // ---- shapes ----
     void rounded_rect(const Rect &r, float radius, Color fill);

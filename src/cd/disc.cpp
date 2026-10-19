@@ -354,8 +354,10 @@ std::vector<Release> parse_releases(std::string_view bytes, const Disc &disc)
     {
         if (!release.is_object() || !release.contains("media") || !release["media"].is_array())
             continue;
+        unsigned medium_position=0;
         for (const auto &medium : release["media"])
         {
+            ++medium_position;
             bool matches = false;
             if (medium.contains("discs") && medium["discs"].is_array())
                 for (const auto &d : medium["discs"])
@@ -364,6 +366,11 @@ std::vector<Release> parse_releases(std::string_view bytes, const Disc &disc)
             if (!matches || !medium.contains("tracks") || !medium["tracks"].is_array())
                 continue;
             Release r;
+            r.medium_position=medium_position;
+            if (medium.contains("position") && medium["position"].is_number_unsigned() &&
+                medium["position"].get<unsigned>() > 0 && medium["position"].get<unsigned>() <= 100)
+                r.medium_position=medium["position"].get<unsigned>();
+            r.medium_count=unsigned(release["media"].size());
             r.id = text(release, "id");
             r.album = text(release, "title");
             r.artist = credit(release);
@@ -403,6 +410,8 @@ bool apply_release(const Release &r, Disc &d)
     d.artist = r.artist;
     d.year = r.date.substr(0, 4);
     d.release = r.id;
+    d.medium_position=r.medium_position;
+    d.medium_count=r.medium_count;
     for (size_t i = 0; i < d.tracks.size(); ++i)
     {
         d.tracks[i].title = r.tracks[i].title;

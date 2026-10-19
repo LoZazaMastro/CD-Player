@@ -18,6 +18,8 @@ in vec2 uv;out vec4 color;
 layout(location=0) uniform float spin;
 layout(location=1) uniform vec2 size;
 layout(binding=0) uniform sampler2D engraving;
+layout(binding=1) uniform sampler2D discImage;
+layout(location=2) uniform float artFade;
 mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
 // A small spindle precession changes the view of the fixed room lights.
 // The two transforms remain exact inverses, including the precession.
@@ -87,8 +89,15 @@ void main(){
         float mark=texture(engraving,label).r;
         vec2 step=1./vec2(textureSize(engraving,0));
         float bevel=texture(engraving,label+step).r-texture(engraving,label-step).r;
-        material=mix(material,material*.22+silver*.045,mark*.92);
-        material+=bevel*.12;
+        material=mix(material,material*.22+silver*.045,mark*.92*(1.-artFade));
+        material+=bevel*.12*(1.-artFade);
+    }
+    if(!rim && artFade>0. && radius>.155 && radius<.85){
+        vec2 tex=vec2(p.x/1.72+.5,.5-p.y/1.72);
+        vec4 printed=texture(discImage,tex);
+        vec3 finish=printed.rgb*(.91+.09*max(dot(-direction,normal),0.))+silver*.055;
+        float mask=smoothstep(.155,.163,radius)*(1.-smoothstep(.845,.85,radius));
+        material=mix(material,finish,artFade*printed.a*mask);
     }
     color=vec4(clamp(material,0.,1.),1.);
 }
@@ -124,7 +133,7 @@ bool Scene::init(const std::string &assets)
     stbi_image_free(pixels);
     return true;
 }
-GLuint Scene::render(float spin, int width, int height)
+GLuint Scene::render(float spin, int width, int height, GLuint label, float label_fade)
 {
     if (canvas_.width() != width || canvas_.height() != height)
         if (!canvas_.create(width, height, 1))
@@ -138,8 +147,11 @@ GLuint Scene::render(float spin, int width, int height)
     glBindVertexArray(vao_);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, engraving_);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, label);
     glUniform1f(0, spin);
     glUniform2f(1, float(width), float(height));
+    glUniform1f(2, label ? label_fade : 0.f);
     glDrawArrays(GL_TRIANGLES, 0, 3);
     canvas_.resolve();
     canvas_.unbind();

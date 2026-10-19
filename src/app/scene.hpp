@@ -16,6 +16,6 @@ class Scene
   public:
     ~Scene();
     bool init(const std::string &assets);
-    GLuint render(float spin, int width, int height);
+    GLuint render(float spin, int width, int height, GLuint label = 0, float label_fade = 0);
 };
 } // namespace cd

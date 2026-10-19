@@ -307,6 +307,7 @@ std::string Visualizer::name(unsigned index)
 std::vector<std::string> Visualizer::names(){std::vector<std::string> result;for(unsigned i=1;i<=visualizer_count;i++)result.push_back(name(i));return result;}
 void Visualizer::draw(DrawList &out, int selection, bool particles, const hui::ui::Fonts &fonts)
 {
+    const size_t first_instance=out.instances().size(), first_vertex=out.mesh_vertices().size();
     if(selection<=int(archive_entries.size()))
     {
         archive_.draw(out,unsigned(selection),archive_time_,signal_.low,signal_.mid,signal_.high,signal_.level,beat_,hit_age_,snare_age_,bands_,fonts);
@@ -326,5 +327,6 @@ void Visualizer::draw(DrawList &out, int selection, bool particles, const hui::u
             const float alpha = .015f + .055f * signal_.level;
             out.circle(x, y, 1, ink(alpha));
         }
+    out.recolor_chromatic(accent_, first_instance, first_vertex);
 }
 } // namespace cd

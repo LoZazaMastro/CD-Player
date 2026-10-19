@@ -10,6 +10,14 @@
 #include <cmath>
 #include <fstream>
 int main(){
+    // Accent mapping preserves neutral geometry, gradients and opacity.
+    hui::gfx::DrawList colors;
+    colors.circle(0,0,3,{.5f,.5f,.5f,.4f});
+    colors.gradient_rect({0,0,20,10},0,{1,0,0,.3f},{.5f,.2f,.2f,.8f});
+    colors.recolor_chromatic({0,.5f,1,1},1);
+    const auto &neutral=colors.instances()[0], &tint=colors.instances()[1];
+    if(neutral.color_top[0]!=.5f || neutral.color_top[3]!=.4f || tint.color_top[0]!=0 ||
+       tint.color_top[2]!=1 || tint.color_top[3]!=.3f || tint.color_bottom[3]!=.8f)return 4;
     cd::ArchiveStudies studies;studies.assets("assets");
     hui::gfx::Font font;std::string bytes;if(!hui::save::read_file("assets/fonts/doto-semibold.huifont",&bytes)||!font.load(bytes))return 2;
     hui::ui::Fonts fonts;fonts.display={&font,0xf0000001};fonts.regular=fonts.display;fonts.semibold=fonts.display;
@@ -25,6 +33,7 @@ int main(){
             auto start=hui::sys::monotonic_us();
             const float time=frame<50?frame/60.f:50/60.f+(frame-50)/120.f;
             bool drawn=studies.draw(out,selected,time,.65f,.45f,.25f,.55f,frame/15,float(frame%15)/60,float(frame%11)/60,bands,fonts);
+            out.recolor_chromatic({.1f,.5f,1,1});
             double ms=(hui::sys::monotonic_us()-start)/1000.;worst=std::max(worst,ms);
             if(frame>=5){steady+=ms;steady_max=std::max(steady_max,ms);}
             missing+=studies.missing_glyphs();
@@ -37,6 +46,7 @@ int main(){
         report<<selected<<'\t'<<cd::archive_entries[selected-1].title<<'\t'<<(okay?"PASS":"FAIL")<<'\t'<<instances<<'\t'<<vertices<<'\t'<<worst<<'\t'<<steady/95<<'\t'<<steady_max<<'\t'<<studies.redraws()<<'\t'<<missing<<'\n';
     }
     cd::Visualizer native;
+    native.accent({.1f,.5f,1,1});
     for(unsigned selected=153;selected<=cd::visualizer_count;++selected){
         hui::gfx::DrawList out;std::array<float,32> bands;bands.fill(.5f);
         native.update(bands,1.f/60,true,false);native.draw(out,int(selected),true,fonts);
