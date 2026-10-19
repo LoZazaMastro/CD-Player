@@ -39,6 +39,13 @@ int main()
     require(back && back->width==72 && back->height==64 && back->rgba[1]==255 && back->rgba[0]==0,"back preserves wider inlay and removes narrow folded spines");
     require(spine && spine->width==4 && spine->height==64 && spine->rgba[0]==255 && spine->rgba[1]==0,"spine is extracted independently from scan edge");
     require(disc && disc->width==64 && disc->height==64 && disc->rgba[1]==255,"disc scan gets centered square crop");
+    std::ifstream padded_file("tests/fixtures/artwork-disc-margin.png",std::ios::binary);
+    const std::vector<uint8_t> padded((std::istreambuf_iterator<char>(padded_file)),{});
+    const auto fitted=cd::decode_artwork(padded,cd::ArtworkCrop::disc);
+    require(fitted && fitted->width>=194 && fitted->width<=204,"disc crop detects printed circle instead of retaining scanner margins");
+    const auto edge=(size_t(fitted->height/2)*fitted->width+fitted->width-3)*4;
+    require(fitted->rgba[edge]<30 && fitted->rgba[edge+1]>140 && fitted->rgba[edge+2]<80,
+            "off-center disc print fills the label mask near its edge");
     std::vector<uint8_t> corrupt(32,255);
     require(!cd::decode_artwork(corrupt,cd::ArtworkCrop::disc),"corrupt image leaves surface blank");
     require(!cd::decode_artwork(std::vector<uint8_t>((8u<<20)+1),cd::ArtworkCrop::disc),"image byte bound enforced");

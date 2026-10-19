@@ -125,6 +125,14 @@ int main()
     snapshot.track = 1;
     snapshot.seconds = 85;
     snapshot.playing = true;
+    if (const char *scan=std::getenv("CD_PLAYER_DISC_SCAN"))
+    {
+        std::ifstream source(scan,std::ios::binary);
+        const std::vector<uint8_t> encoded((std::istreambuf_iterator<char>(source)),{});
+        snapshot.disc_art=cd::decode_artwork(encoded,cd::ArtworkCrop::disc);
+        if(snapshot.disc_art) std::printf("Fitted disc artwork: %d x %d\n",
+            snapshot.disc_art->width,snapshot.disc_art->height);
+    }
     cd::Analyzer analyzer;
     std::ifstream wav("build/apple-disc.wav", std::ios::binary);
     std::vector<char> audio((std::istreambuf_iterator<char>(wav)), {});

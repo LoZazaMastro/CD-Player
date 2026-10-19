@@ -7,9 +7,75 @@
 #include "third_party/nlohmann/json.hpp"
 #include <algorithm>
 #include <cmath>
+#include <array>
 
 namespace cd
 {
+namespace
+{
+struct DiscCircle { float x, y, radius; bool found = false; };
+
+DiscCircle printed_disc_circle(const uint8_t *pixels, int width, int height)
+{
+    const float base = std::min(width, height) * .5f;
+    DiscCircle best{(width-1)*.5f, (height-1)*.5f, base};
+    std::array<std::array<float, 2>, 96> rays;
+    for (size_t i=0; i<rays.size(); ++i)
+    {
+        const float angle=(float(i)+.37f)*6.2831853f/float(rays.size());
+        rays[i]={std::cos(angle), std::sin(angle)};
+    }
+    const auto pixel = [&](float x, float y)
+    {
+        const int col=std::clamp(int(std::lround(x)),0,width-1);
+        const int row=std::clamp(int(std::lround(y)),0,height-1);
+        return pixels+(size_t(row)*width+col)*4;
+    };
+    const float delta=std::max(1.f, base/300.f);
+    const auto score = [&](float x, float y, float radius)
+    {
+        std::array<float, 96> contrasts;
+        for (size_t i=0; i<rays.size(); ++i)
+        {
+            const auto a=pixel(x+(radius-delta)*rays[i][0], y+(radius-delta)*rays[i][1]);
+            const auto b=pixel(x+(radius+delta)*rays[i][0], y+(radius+delta)*rays[i][1]);
+            float rgb=0;
+            for (int c=0; c<3; ++c)
+                rgb+=std::abs(float(a[c])*a[3]-float(b[c])*b[3])/(255.f*765.f);
+            contrasts[i]=std::max(rgb, std::abs(float(a[3])-float(b[3]))/255.f);
+        }
+        // A circular boundary must agree around the disc. Isolated lettering,
+        // scanner dust and square image borders do not win this median vote.
+        auto middle=contrasts.begin()+contrasts.size()/2;
+        std::nth_element(contrasts.begin(),middle,contrasts.end());
+        return *middle;
+    };
+    float best_score=.06f;
+    float center_step=base*.03f, radius_step=std::max(1.f,base*.005f);
+    float low=base*.72f, high=base;
+    for (int pass=0; pass<3; ++pass)
+    {
+        const auto previous=best;
+        for (int cy=-1; cy<=1; ++cy) for (int cx=-1; cx<=1; ++cx)
+        {
+            const float x=previous.x+cx*center_step, y=previous.y+cy*center_step;
+            for (float r=low; r<=high; r+=radius_step)
+            {
+                if (r>std::min({x,y,width-1-x,height-1-y})+1) continue;
+                const float candidate=score(x,y,r);
+                if (candidate>best_score)
+                {best={x,y,r,true}; best_score=candidate;}
+            }
+        }
+        if (!best.found) break;
+        low=best.radius-radius_step*2; high=best.radius+radius_step*2;
+        center_step/=3; radius_step/=3;
+    }
+    if (best.found) best.radius-=std::max(.5f,base*.002f);
+    return best;
+}
+} // namespace
+
 ArtworkSources parse_artwork_sources(std::string_view bytes,const std::string &release,
                                      unsigned medium,unsigned medium_count)
 {
@@ -81,6 +147,13 @@ std::shared_ptr<const ArtworkImage> decode_artwork(std::span<const uint8_t> byte
     {
         if(width>height*1.4 || height>width*1.4)return {};
         w=h=std::min(width,height);x=(width-w)/2;y=(height-h)/2;
+        const auto circle=printed_disc_circle(pixels,width,height);
+        if (circle.found)
+        {
+            w=h=std::max(2,int(std::lround(circle.radius*2)));
+            x=int(std::lround(circle.x-circle.radius));
+            y=int(std::lround(circle.y-circle.radius));
+        }
     }
     if(crop==ArtworkCrop::back_with_spines || crop==ArtworkCrop::spine_from_back)
     {
