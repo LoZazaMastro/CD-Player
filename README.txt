@@ -31,8 +31,9 @@ CONTROLS
 D-pad: navigate. Cross: select. Square: play/pause. Triangle: eject.
 L1/R1: previous/next track. L2/R2: seek backward/forward by 10 seconds.
 Touchpad: fullscreen visualizer. Options: settings. Circle: back.
+Right stick up/down: adjust the master volume from any screen.
 Hold Options + Circle to close the application.
-A red Play icon replaces the number of the track currently playing.
+A Play icon in the accent color replaces the number of the track currently playing.
 The six icon buttons offer previous track, play/pause, next track,
 visualizer, settings and eject. The Show Eject button toggle hides the Eject
 icon and lets the other five buttons fill the same total width without
@@ -60,10 +61,13 @@ be adjusted during playback. Upmix derives surround sound from stereo; it
 does not turn the CD into an original multichannel recording. The upmix
 control is unavailable when AudioOut only accepts stereo output.
 
-Surround gain changes only the generated center, side and rear channels.
-Subwoofer gain changes only LFE. Both range from mute to +24 dB; 0 dB retains
-the original upmix level. The front left and right channels are not raised.
-Gain changes are smoothed, with a soft peak limiter on generated channels.
+Speaker setup opens within the settings drawer and controls all eight speakers
+independently: front left/right, center, surround left/right, side left/right,
+and subwoofer (LFE). Each ranges from mute to +24 dB. 0 dB keeps its original
+level; fronts stay unchanged unless their own controls are adjusted.
+Previous upmix gains carry over to the individual speakers, including mute.
+Front controls also work in stereo; additional speakers require 7.1 upmix.
+Gain changes are smoothed, with peak protection on generated or boosted channels.
 
 LYRICS
 Press R3 in the fullscreen visualizer to switch to lyrics, or back again.
@@ -71,17 +75,21 @@ Timed lyrics highlight the current phrase and scroll it smoothly to the
 center, following playback, pause and seeking. When only untimed lyrics are
 available, use the D-pad to scroll. Availability depends on the track.
 Lyrics are provided by LRCLIB and cached after the first online lookup.
+Temporary server errors trigger automatic retries while the loading message
+stays visible. Leaving lyrics or changing tracks cancels further retries.
 No song lyrics or recordings are bundled with the app.
+Returning to the current track's loaded lyrics opens them without a loading flash.
 
 Autoplay disc starts the first audio track after a disc is detected. It is off
 by default and can be enabled in settings. Changing the toggle does not start
 a disc that is already present.
 
 Equalizer bands and enable state, upmix and its channel gains, gapless playback, autoplay, volume, reduce
-motion, selected visualizer, shuffle and Eject button visibility are saved
+motion, selected visualizer, shuffle, Eject button visibility and accent color are saved
 automatically.
 Changes are checked for saving once per second and restored at the next launch.
 Application updates preserve these settings outside the installation folder.
+Accent color offers 40 named colors with a swatch. Changes apply immediately.
 
 ALBUM METADATA
 Internet access is needed for online album information and covers.
@@ -132,6 +140,6 @@ reusable buffers. Terminal effects include monospaced box-drawing characters.
 VERSION 1.1.1
 Music keeps playing when the controller turns off or disconnects, including
 when the system temporarily takes controller input. Play/Pause remains manual.
-Separate surround and subwoofer gains leave front left and right unchanged.
+Speaker setup provides saved, independent gain controls for all eight outputs.
 R3 switches between the fullscreen visualizer and lyrics. Timed phrases scroll
 with playback when available; untimed lyrics can be scrolled manually.

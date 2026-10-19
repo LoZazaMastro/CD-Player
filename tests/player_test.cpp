@@ -15,6 +15,7 @@ std::atomic<bool> medium{true};
 std::atomic<unsigned> wakes{0}, ejections{0}, reads{0};
 std::atomic<bool> lyrics_enabled{false}, lyrics_busy{false};
 std::atomic<unsigned> lyric_requests{0};
+std::atomic<unsigned> transient_lyrics_failures{0};
 class FakeDrive : public cd::Drive
 {
   public:
@@ -147,6 +148,7 @@ int http_get(const std::string &url, std::vector<uint8_t> &out, size_t limit)
     {
         ++lyric_requests;lyrics_busy.store(true);
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        if(transient_lyrics_failures.exchange(0)) {lyrics_busy.store(false);return 503;}
         const bool second=url.find("Fixture%20Two")!=std::string::npos;
         const std::string response=std::string(R"({"trackName":")")+(second?"Fixture Two":"Fixture One")+
             R"(","artistName":"Fixture Artist","duration":0.213333,"syncedLyrics":"[00:00.00]A test phrase\n[00:00.10]Another test phrase"})";
@@ -248,13 +250,13 @@ int main()
     p.visual_rotation(true);
     p.show_eject_button(false);
     p.oled_visualizer(true);
+    p.accent_color(24);
     p.volume(.37f);
     p.gapless(false);
     p.reduced_motion(true);
     preferences.equalizer(true);
     preferences.upmix(true);
-    preferences.surround_gain(8);
-    preferences.lfe_gain(12);
+    for(size_t c=0;c<8;++c) preferences.channel_gain(c,float(c));
     for(size_t band=0;band<10;++band)preferences.band(band,float(band)-5);
     p.visualization(147);
     bool saved = false;
@@ -278,6 +280,7 @@ int main()
     const auto restored_snapshot = restored.snapshot();
     require(!restored_snapshot.show_eject_button, "Eject button visibility restored");
     require(restored_snapshot.oled_visualizer, "OLED mode restored");
+    require(restored_snapshot.accent_color==24,"accent color restored");
     require(restored_snapshot.autoplay, "autoplay preference restored");
     require(restored_snapshot.visual_rotation, "rotation preference restored");
     require(restored_snapshot.visualization == 147, "manually selected visualizer restored");
@@ -285,11 +288,19 @@ int main()
     require(!restored.gapless(), "gapless preference restored");
     require(restored_snapshot.reduced_motion, "motion preference restored");
     require(restored_preferences.equalizer() && restored_preferences.upmix(), "DSP toggles restored into fresh DSP");
-    require(restored_preferences.surround_gain()==8 && restored_preferences.lfe_gain()==12,
-            "independent surround and subwoofer gains restored");
+    for(size_t c=0;c<8;++c)
+        require(restored_preferences.channel_gain(c)==float(c),"every speaker gain restored independently");
     for(size_t band=0;band<10;++band)
         require(std::abs(restored_preferences.band(band)-(float(band)-5)) < .001f, "every EQ band restored");
     restored.stop();
+    std::filesystem::create_directories("build/player-legacy-test-data");
+    {std::ofstream legacy("build/player-legacy-test-data/settings.json");legacy<<R"({"version":1,"surround_gain":4,"lfe_gain":0,"upmix":true})";}
+    cd::Player legacy_player;cd::Dsp legacy_dsp;legacy_player.audio_preferences(legacy_dsp);
+    require(legacy_player.start("build/player-legacy-test-data"),"legacy preferences load");
+    require(legacy_player.snapshot().accent_color==0,"legacy preferences retain original accent");
+    for(size_t c=0;c<8;++c)
+        require(legacy_dsp.channel_gain(c)==(c<2?1:c==3?0:4),"legacy gains migrate without changing fronts or losing mute");
+    legacy_player.stop();
     const std::string lyric_cache="build/player-lyrics-test-data";
     std::filesystem::create_directories(lyric_cache);
     for(const auto &file:std::filesystem::directory_iterator(lyric_cache))
@@ -306,9 +317,29 @@ int main()
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     require(lyric_player.snapshot().disc.artist=="Fixture Artist","lyrics use resolved album metadata");
     require(lyric_requests.load()==0,"no lyrics request until page is opened");
+    transient_lyrics_failures.store(1);
     lyric_player.lyrics_visible(true);
+    for(unsigned n=0;n<200 && lyric_requests.load()==0;++n)
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    require(lyric_player.snapshot().lyrics_state==cd::LyricsState::loading,"503 remains in loading state during automatic retry");
     const auto wait_lyrics=[&](){for(unsigned n=0;n<400;++n){const auto s=lyric_player.snapshot();if(s.lyrics_state==cd::LyricsState::ready && s.lyrics)return;std::this_thread::sleep_for(std::chrono::milliseconds(10));}require(false,"lyrics timeout");};
-    wait_lyrics();require(lyric_player.snapshot().lyrics->synced,"worker decodes timed lyrics");
+    wait_lyrics();require(lyric_player.snapshot().lyrics->synced && lyric_requests.load()==2,"503 recovers automatically without toggling R3");
+    const auto held_lyrics=lyric_player.snapshot().lyrics;
+    for(unsigned reopening=0;reopening<3;++reopening)
+    {
+        lyric_player.lyrics_visible(false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        lyric_player.lyrics_visible(true);
+        for(unsigned tick=0;tick<20;++tick)
+        {
+            const auto shown=lyric_player.snapshot();
+            require(shown.lyrics_state==cd::LyricsState::ready && shown.lyrics==held_lyrics,
+                    "R3 reopen reuses ready lyrics with no loading flash or reparse");
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+    require(lyric_requests.load()==2,"reopening lyrics makes no new network requests");
     lyric_player.play_track(1);
     for(unsigned n=0;n<200 && !lyrics_busy.load();++n)
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -316,7 +347,7 @@ int main()
     lyric_player.play_track(0);
     require(!lyric_player.snapshot().lyrics,"late track response cannot display against a different audible track");
     wait_lyrics();
-    require(lyric_player.snapshot().track==1 && lyric_requests.load()==2,"return to earlier track uses cache");
+    require(lyric_player.snapshot().track==1 && lyric_requests.load()==3,"return to earlier track uses cache");
     lyric_player.lyrics_visible(false);lyric_player.stop();lyrics_enabled.store(false);
     std::printf("Session passed: wake, TOC, pause, exact gap/gapless, eject, reinsertion, track "
                 "selection (%u reads)\n",

@@ -193,7 +193,8 @@ int main()
     }
     cd::Dsp reference, boosted, sub;
     reference.upmix(true);boosted.upmix(true);sub.upmix(true);
-    boosted.surround_gain(8);sub.lfe_gain(8);
+    for(size_t c : {2u,4u,5u,6u,7u}) boosted.channel_gain(c,8);
+    sub.channel_gain(3,8);
     reference.process(signal,normal,8);boosted.process(signal,louder,8);sub.process(signal,bass,8);
     for(size_t i=0;i<48000;++i)
         check(normal[i*8]==louder[i*8] && normal[i*8+1]==louder[i*8+1] &&
@@ -211,15 +212,15 @@ int main()
         check(base>1000 && std::abs(std::sqrt(surround_energy/base)-expected_surround)<.02);
         check(std::abs(std::sqrt(bass_energy/base)-expected_bass)<.02);
     }
-    boosted.surround_gain(0);boosted.lfe_gain(0);
+    for(size_t c=2;c<8;++c) boosted.channel_gain(c,0);
     boosted.process(signal,louder,8);
     for(size_t i=12000;i<48000;++i)
         for(unsigned c=2;c<8;++c)check(louder[i*8+c]==0);
-    boosted.surround_gain(1000);boosted.lfe_gain(1000);
-    check(boosted.surround_gain()==cd::Dsp::maximum_gain && boosted.lfe_gain()==cd::Dsp::maximum_gain);
-    boosted.surround_gain(std::numeric_limits<float>::infinity());
-    boosted.lfe_gain(std::numeric_limits<float>::quiet_NaN());
-    check(boosted.surround_gain()==cd::Dsp::maximum_gain && boosted.lfe_gain()==cd::Dsp::maximum_gain);
+    for(size_t c=2;c<8;++c) boosted.channel_gain(c,1000);
+    check(boosted.channel_gain(2)==cd::Dsp::maximum_gain && boosted.channel_gain(3)==cd::Dsp::maximum_gain);
+    boosted.channel_gain(2,std::numeric_limits<float>::infinity());
+    boosted.channel_gain(3,std::numeric_limits<float>::quiet_NaN());
+    check(boosted.channel_gain(2)==cd::Dsp::maximum_gain && boosted.channel_gain(3)==cd::Dsp::maximum_gain);
     std::fill(signal.begin(),signal.end(),32767);boosted.process(signal,louder,8);
     check(louder[louder.size()-6]>32000 && louder[louder.size()-5]>32000);
     check(louder[louder.size()-8]==26214 && louder[louder.size()-7]==26214);
@@ -228,6 +229,34 @@ int main()
     // The preceding 8-channel stream crossfades out of its existing upmix.
     boosted.process(signal,stereo_only,2);
     check(signal==stereo_only);
+    // Every output gain affects exactly one speaker, including the front pair.
+    for(size_t i=0;i<48000;++i)
+    {
+        signal[i*2]=int16_t(900*std::sin(2*std::numbers::pi*70*i/48000));
+        signal[i*2+1]=int16_t(600*std::sin(2*std::numbers::pi*110*i/48000));
+    }
+    for(size_t channel=0;channel<8;++channel)
+    {
+        cd::Dsp individual;individual.upmix(true);individual.channel_gain(channel,2);
+        individual.process(signal,louder,8);
+        for(size_t c=0;c<8;++c)
+        {
+            double before=0,after=0;
+            for(size_t i=12000;i<48000;++i)
+            {
+                before+=double(normal[i*8+c])*normal[i*8+c];
+                after+=double(louder[i*8+c])*louder[i*8+c];
+                if(c!=channel)check(normal[i*8+c]==louder[i*8+c]);
+            }
+            check(std::abs(std::sqrt(after/before)-(c==channel?2:1))<.02);
+        }
+        individual.channel_gain(channel,0);individual.process(signal,louder,8);
+        for(size_t i=12000;i<48000;++i)check(louder[i*8+channel]==0);
+    }
+    cd::Dsp stereo_balance;stereo_balance.channel_gain(0,.5f);
+    stereo_balance.process(signal,stereo_only,2);
+    for(size_t i=12000;i<48000;++i)
+        check(std::abs(int(stereo_only[i*2])*2-int(signal[i*2]))<=1 && stereo_only[i*2+1]==signal[i*2+1]);
     // Timestamp parsing and matching use CD playback time, including backward seeks.
     const auto lyrics=cd::parse_lrc("[ar:Test]\n[00:01.50]First phrase\n[00:04.000][00:12.00]Repeated phrase\n[00:07]Third phrase");
     check(lyrics.synced && lyrics.lines.size()==4);

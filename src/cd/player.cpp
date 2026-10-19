@@ -76,10 +76,26 @@ bool Player::start(std::string cache)
                 dsp_->equalizer(settings["equalizer"].get<bool>());
             if (settings.contains("upmix") && settings["upmix"].is_boolean())
                 dsp_->upmix(settings["upmix"].get<bool>());
-            if (settings.contains("surround_gain") && settings["surround_gain"].is_number())
-                dsp_->surround_gain(settings["surround_gain"].get<float>());
-            if (settings.contains("lfe_gain") && settings["lfe_gain"].is_number())
-                dsp_->lfe_gain(settings["lfe_gain"].get<float>());
+            bool individual_gains = false;
+            if (settings.contains("speaker_gains") && settings["speaker_gains"].is_array() &&
+                settings["speaker_gains"].size() == 8)
+            {
+                const auto &gains = settings["speaker_gains"];
+                individual_gains = std::all_of(gains.begin(), gains.end(), [](const auto &v)
+                    { return v.is_number() && std::isfinite(v.template get<float>()); });
+                if (individual_gains)
+                    for (size_t c = 0; c < 8; ++c) dsp_->channel_gain(c, gains[c].get<float>());
+            }
+            if (!individual_gains)
+            {
+                // Migrate the two earlier controls, including mute, without
+                // changing either front channel or multiplying gains twice.
+                if (settings.contains("surround_gain") && settings["surround_gain"].is_number())
+                    for (size_t c : {2u, 4u, 5u, 6u, 7u})
+                        dsp_->channel_gain(c, settings["surround_gain"].get<float>());
+                if (settings.contains("lfe_gain") && settings["lfe_gain"].is_number())
+                    dsp_->channel_gain(3, settings["lfe_gain"].get<float>());
+            }
             if (settings.contains("gapless") && settings["gapless"].is_boolean())
                 gapless(settings["gapless"].get<bool>());
             if (settings.contains("volume") && settings["volume"].is_number())
@@ -97,6 +113,8 @@ bool Player::start(std::string cache)
                 autoplay(settings["autoplay"].get<bool>());
             if (settings.contains("oled_visualizer") && settings["oled_visualizer"].is_boolean())
                 oled_visualizer(settings["oled_visualizer"].get<bool>());
+            if (settings.contains("accent_color") && settings["accent_color"].is_number_unsigned())
+                accent_color(settings["accent_color"].get<unsigned>());
             if (settings.contains("bands") && settings["bands"].is_array())
                 for (size_t i = 0; i < 10 && i < settings["bands"].size(); ++i)
                     if (settings["bands"][i].is_number())
@@ -169,6 +187,7 @@ Snapshot Player::snapshot()
     s.autoplay = autoplay_.load();
     s.show_eject_button = show_eject_button_.load();
     s.oled_visualizer = oled_visualizer_.load();
+    s.accent_color = accent_color_.load();
     s.volume = volume();
     const uint64_t position = position_.load();
     s.track = 0;
@@ -405,11 +424,9 @@ void Player::io_loop()
         if (dsp_ && hui::sys::monotonic_us() >= preferences_at)
         {
             preferences_at = hui::sys::monotonic_us() + 1000000;
-            nlohmann::json settings = {{"version", 1},
+            nlohmann::json settings = {{"version", 2},
                                        {"equalizer", dsp_->equalizer()},
                                        {"upmix", dsp_->upmix()},
-                                       {"surround_gain", dsp_->surround_gain()},
-                                       {"lfe_gain", dsp_->lfe_gain()},
                                        {"gapless", gapless()},
                                        {"volume", volume()},
                                        {"reduced_motion", reduced_motion_.load()},
@@ -417,7 +434,11 @@ void Player::io_loop()
                                        {"visual_rotation", visual_rotation_.load()},
                                        {"autoplay", autoplay_.load()},
                                        {"oled_visualizer", oled_visualizer_.load()},
+                                       {"accent_color", accent_color_.load()},
                                        {"show_eject_button", show_eject_button_.load()}};
+            std::vector<float> speaker_gains;
+            for (size_t c = 0; c < 8; ++c) speaker_gains.push_back(dsp_->channel_gain(c));
+            settings["speaker_gains"] = speaker_gains;
             std::vector<float> bands;
             for (size_t i = 0; i < 10; ++i)
                 bands.push_back(dsp_->band(i));
@@ -841,6 +862,14 @@ void Player::lyrics_loop()
         if (key.empty() || key==completed) { wait(100000); continue; }
         {
             std::lock_guard lock(mutex_);
+            // Reopening the same track reuses its ready result in memory.
+            // Do not clear it or briefly publish Loading to read the cache again.
+            if (lyrics_key_ == key && lyrics_disc_ == disc.id && lyrics_track_ == track.number &&
+                snapshot_.lyrics_state == LyricsState::ready && snapshot_.lyrics)
+            {
+                completed = key;
+                continue;
+            }
             lyrics_key_=key;lyrics_track_=track.number;lyrics_disc_=disc.id;
             lyrics_title_=track.title;lyrics_artist_=track.artist.empty()?disc.artist:track.artist;
             lyrics_album_=disc.album;lyrics_duration_=track.end-track.start;
@@ -848,18 +877,42 @@ void Player::lyrics_loop()
         }
         const auto path=cache_+"/"+key+".json";
         std::vector<uint8_t> body;
-        bool cached=get_cache(path,body,512u<<10);
-        int status=cached?200:http_get(lyrics_url(track,disc),body,512u<<10);
-        if (stop_.load()) break;
-        Lyrics decoded;
-        if (status==200)
-            decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
-        if (cached && decoded.lines.empty() && !decoded.instrumental)
+        const auto current = [&]()
         {
-            body.clear();status=http_get(lyrics_url(track,disc),body,512u<<10);
-            if (stop_.load()) break;
-            if(status==200)decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
+            if (stop_.load() || !lyrics_visible_.load()) return false;
+            std::lock_guard lock(mutex_);
+            const auto position = position_.load();
+            return snapshot_.state == State::ready && metadata_generation_ == generation &&
+                snapshot_.disc.id == disc.id && position >= uint64_t(track.start)*640 &&
+                position < uint64_t(track.end)*640;
+        };
+        const bool cached=get_cache(path,body,512u<<10);
+        int status=cached?200:0;
+        Lyrics decoded;
+        if (cached)
+            decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
+        if (decoded.lines.empty() && !decoded.instrumental)
+        {
+            for (unsigned attempt = 0; attempt < 3; ++attempt)
+            {
+                // Keep the loading state visible through transient server errors.
+                // Backoff is interruptible when leaving lyrics or changing tracks.
+                if (attempt)
+                {
+                    hui::sys::log("[CD lyrics] track=%u retry=%u previous_status=%d", track.number, attempt, status);
+                    for (unsigned tick = 0; tick < attempt*10 && current(); ++tick) wait(100000);
+                }
+                if (!current()) break;
+                body.clear();
+                status=http_get(lyrics_url(track,disc),body,512u<<10);
+                if (stop_.load()) break;
+                if(status==200)decoded=parse_lyrics_response({reinterpret_cast<const char*>(body.data()),body.size()},track,disc);
+                const bool transient = status == -1 || status == 408 || status == 429 ||
+                                       (status >= 500 && status <= 599);
+                if (!transient || !decoded.lines.empty() || decoded.instrumental) break;
+            }
         }
+        if (!current()) { completed.clear(); continue; }
         const bool available=!decoded.lines.empty()||decoded.instrumental;
         const bool synced=decoded.synced;
         if(available)write_cache(path,body);

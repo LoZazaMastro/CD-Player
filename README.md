@@ -29,12 +29,13 @@ Designed by **Andrea Sgarro**.
 - Choose from **161 individual audio-reactive visualizers**, one at a time, or let the app shuffle them when the track changes.
 - Use **OLED mode** to hide fullscreen labels, gently move the effect, and switch to a black screen after a minute of inactivity while playback is stopped.
 - Adjust a ten-band equalizer, volume, gapless playback and optional stereo-to-7.1 upmix while listening.
-- Set the generated surround and subwoofer gains separately, without raising the front pair.
+- Balance all eight speakers independently in Speaker setup, including the front pair, center, surround, side and subwoofer channels.
 - Read lyrics in Doto with R3 from the fullscreen visualizer. Timed phrases follow the music when available through LRCLIB.
 - Enable **Autoplay disc** if you want a newly inserted CD to start on its own.
 - Hide the Eject button if you prefer: the remaining buttons fill the same space, while their icons keep the same size.
 - The track list brings the playing track into view when it changes. You can then browse freely without the list pulling you back.
 - Keep your settings and chosen visualizer between launches. All interface text is in English.
+- Choose an accent from 40 named colors. The interface changes immediately and remembers your choice.
 
 ## A quiet interface
 
@@ -100,11 +101,12 @@ depends on the USB bridge, drive firmware and console environment.
 | L2 / R2 | Seek backward / forward by 10 seconds |
 | Touchpad click | Enter / leave the fullscreen visualizer |
 | R3, in fullscreen | Switch between the visualizer and lyrics |
+| Right stick up / down | Raise / lower the master volume from any screen |
 | Options | Open settings |
 | Circle | Back |
 | Hold Options, then press Circle | Close the app |
 
-A red Play icon marks the track you are hearing. When paused, its track number
+A Play icon in the accent color marks the track you are hearing. When paused, its track number
 returns. Hiding the Eject icon also hides its control hint; the Triangle shortcut remains available.
 
 ## Sound and saved settings
@@ -114,11 +116,14 @@ the PS5 audio output. The optional 7.1 upmix derives surround channels from
 stereo; it is not an original multichannel recording. The control is unavailable
 when the output accepts only stereo.
 
-Surround gain controls only the generated center, side and rear channels.
-Subwoofer gain controls only the generated LFE channel. Both run from mute to
-+24 dB, with 0 dB preserving the original upmix level. Neither slider raises
-the front left or right channel. Changes fade in smoothly; a soft peak limiter
-keeps the generated channels within the output range.
+Speaker setup opens inside the settings drawer and provides eight independent
+sliders: front left/right, center, surround left/right, side left/right and LFE
+(subwoofer). Each runs from mute to +24 dB. At 0 dB the channel keeps its original
+level; the front pair stays unchanged unless you adjust its own sliders.
+Changes fade in smoothly, with peak protection on the generated channels and
+deliberately boosted front channels. Previously saved upmix gains carry over
+to their corresponding speakers, including mute. Front controls also work with
+stereo output; generated speakers require 7.1 output and upmix enabled.
 
 Press R3 in the fullscreen visualizer to open lyrics. When LRCLIB has timed
 lyrics for the track, the current phrase is highlighted and scrolls smoothly
@@ -126,9 +131,12 @@ to the center, following the CD's playback position through pauses and seeks.
 If only untimed text is available, it can be scrolled with the D-pad. Some
 tracks have no lyrics available. Lyrics need an Internet connection on first
 lookup and are cached for later use.
+Temporary server errors are retried automatically while the loading message
+remains on screen; leaving lyrics or changing tracks cancels further retries.
+Returning to lyrics already loaded for the current track opens them directly.
 
-Equalizer settings, upmix and its two channel gains, volume, gapless playback, autoplay, reduced motion,
-visualizer selection, shuffle and Eject-button visibility are saved automatically.
+Equalizer settings, upmix, all eight speaker gains, volume, gapless playback, autoplay, reduced motion,
+visualizer selection, shuffle, Eject-button visibility and accent color are saved automatically.
 They are checked for saving once per second and restored on the next launch.
 Updating the app leaves this data outside the installation folder:
 

@@ -31,6 +31,33 @@ struct ScreenInspection
     }
     static void idle(Screen &s,float value) { s.idle_=value; }
     static void preference(Screen &s,int id) { s.preferences_.focus_row(id); }
+    static void speaker(Screen &s,int id) { s.speakers_.focus_row(id); }
+    static bool speakers_open(const Screen &s) { return s.speaker_page_ && s.settings_; }
+    static bool accent_matches(const Screen &s,unsigned index)
+    {
+        const auto color=hui::gfx::Color::rgb(accent_colors[index].rgb);
+        return s.accent.r==color.r && s.accent.g==color.g && s.accent.b==color.b &&
+            s.speakers_.style.theme.accent.r==color.r && s.preferences_.style.theme.accent.g==color.g &&
+            s.tracks_.style.theme.accent.b==color.b && s.dot_style().label.r==color.r;
+    }
+    static bool volume_help(const Screen &s)
+    {
+        return s.preferences_.help_text()=="Right stick up/down adjusts volume" &&
+            s.fonts_.regular.measure(s.preferences_.help_text(),21)<=700;
+    }
+    static bool interface_order(const Screen &s)
+    {
+        const int count=s.preferences_.row_count();
+        return s.preferences_.row_at(count-2).id==14 && s.preferences_.row_at(count-1).id==10 &&
+            s.preferences_.row(9)==nullptr;
+    }
+    static bool speaker_values_fit(const Screen &s)
+    {
+        for(const char *value : {"+10 dB", "+20 dB", "+24 dB", "-48 dB", "Mute"})
+            if(s.fonts_.regular.measure(value,s.speakers_.style.value_size)>
+                std::min(s.speakers_.style.number_width,s.speakers_.style.control_width*.4f)-8)return false;
+        return true;
+    }
     static bool lyrics(const Screen &s) { return s.lyrics_page_; }
     static int line(const Screen &s) { return s.current_lyric_; }
     static float lyric_error(const Screen &s) { return s.lyric_scroll_.target-s.lyric_scroll_.value; }
@@ -120,12 +147,49 @@ int main()
         screen.handle(menu,feedback,player,dsp);require(!cd::ScreenInspection::lyrics(screen),"settings leave lyrics mode");
         settle();dsp.upmix(true);settle();
         cd::ScreenInspection::preference(screen,12);
+        screen.handle(toggle,feedback,player,dsp);
+        require(cd::ScreenInspection::speakers_open(screen),"Speaker setup opens inside settings drawer");
+        settle();
         hui::InputFrame increase;increase.nav=hui::Direction::right;
-        screen.handle(increase,feedback,player,dsp);
-        require(dsp.surround_gain()>1 && dsp.lfe_gain()==1,"surround slider changes only additional channels gain");
-        const float surround_gain=dsp.surround_gain();
-        cd::ScreenInspection::preference(screen,13);screen.handle(increase,feedback,player,dsp);
-        require(dsp.lfe_gain()>1 && dsp.surround_gain()==surround_gain,"subwoofer slider operates independently");
+        for(size_t channel=0;channel<8;++channel)
+        {
+            std::array<float,8> before;
+            for(size_t c=0;c<8;++c)before[c]=dsp.channel_gain(c);
+            cd::ScreenInspection::speaker(screen,int(channel));screen.handle(increase,feedback,player,dsp);
+            for(size_t c=0;c<8;++c)
+                require(c==channel?dsp.channel_gain(c)>before[c]:dsp.channel_gain(c)==before[c],"each speaker slider changes only its output channel");
+            settle();
+        }
+        require(cd::ScreenInspection::speaker_values_fit(screen),"two-digit gain labels fit without ellipsis");
+        draw();
+        hui::InputFrame back;back.pressed=hui::action_bit(hui::Action::back);screen.handle(back,feedback,player,dsp);
+        require(!cd::ScreenInspection::speakers_open(screen),"Back returns to main settings from speaker setup");
+        cd::ScreenInspection::preference(screen,14);
+        require(cd::ScreenInspection::interface_order(screen),"Accent color precedes Eject and designer row is removed");
+        require(cd::accent_colors.size()==40,"forty named accent colors");
+        for(unsigned step=1;step<=40;++step)
+        {
+            screen.handle(increase,feedback,player,dsp);
+            const unsigned selected=step%40;
+            require(player.snapshot().accent_color==selected && cd::ScreenInspection::accent_matches(screen,selected),
+                    "accent selection immediately updates controls and hints");
+            state.accent_color=selected;settle();draw();
+        }
+        cd::ScreenInspection::preference(screen,5);
+        require(cd::ScreenInspection::volume_help(screen),"Volume shows right-stick instruction in settings help area");
+        hui::InputFrame stick;stick.stick2_y=-1;player.volume(.5f);
+        screen.handle(stick,feedback,player,dsp);require(player.volume()>.5f,"right stick raises volume within settings");
+        screen.preview_preferences(false);screen.preview_fullscreen(false);settle();
+        const float before_album=player.volume();stick.stick2_y=1;
+        screen.handle(stick,feedback,player,dsp);require(player.volume()<before_album,"right stick lowers volume on album page");
+        screen.preview_fullscreen(true);settle();const float before_visualizer=player.volume();stick.stick2_y=-1;
+        screen.handle(stick,feedback,player,dsp);require(player.volume()>before_visualizer,"right stick raises volume in visualizer");
+        screen.preview_lyrics(true);settle();const float before_lyrics=player.volume();stick.stick2_y=1;
+        screen.handle(stick,feedback,player,dsp);require(player.volume()<before_lyrics,"right stick lowers volume in lyrics");
+        player.volume(0);screen.handle(stick,feedback,player,dsp);require(player.volume()==0,"master volume cannot fall below mute");
+        player.volume(1);stick.stick2_y=-1;screen.handle(stick,feedback,player,dsp);require(player.volume()==1,"master volume cannot exceed unity");
+        stick.stick2_y=.1f;player.volume(.5f);screen.handle(stick,feedback,player,dsp);require(player.volume()==.5f,"stick deadzone does not change volume");
+        state.volume=player.volume();draw();
     }
     eglMakeCurrent(display,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
     eglDestroyContext(display,context);eglTerminate(display);

@@ -27,8 +27,12 @@ class Screen
     hui::gfx::Font regular_, semibold_, doto_, visual_mono_;
     hui::ui::Fonts fonts_;
     hui::ui::Theme theme_;
+    hui::gfx::Color accent = hui::gfx::Color::rgb(0xd71920);
+    unsigned accent_index_ = 0;
+    void apply_accent(unsigned index);
+    hui::ui::GlyphStyle dot_style() const;
     hui::ui::ListView tracks_;
-    hui::ui::Form preferences_;
+    hui::ui::Form preferences_, speakers_;
     hui::tween::Spring settings_amount_;
     hui::tween::Spring album_amount_, cover_focus_amount_, album_scroll_motion_;
     hui::ui::ButtonGroup actions_;
@@ -36,7 +40,7 @@ class Screen
     GLuint cover_ = 0, pending_cover_ = 0;
     uint64_t revision_ = UINT64_MAX, cover_revision_ = UINT64_MAX;
     std::string shown_id_;
-    float last_dt_ = 0, idle_ = 0;
+    float last_dt_ = 0, idle_ = 0, volume_feedback_ = 0;
     bool showing_playback_ = false;
     float time_ = 0;
     bool full_ = false, settings_ = false, toolbar_ = false, reduced_motion_ = false;
@@ -46,6 +50,7 @@ class Screen
     unsigned audio_channels_ = 8, playing_track_ = 0;
     unsigned observed_track_ = 0;
     bool equalizer_page_ = false;
+    bool speaker_page_ = false;
     int eq_focus_ = 0;
     std::array<float, 10> eq_positions_{};
     size_t edition_count_ = SIZE_MAX;
@@ -90,7 +95,9 @@ class Screen
     void preview_preferences(bool value)
     {
         settings_ = value;
+        if (!value) speaker_page_ = false;
     }
+    void preview_speakers(bool value) { settings_ = value; speaker_page_ = value; }
     void preview_equalizer(bool value)
     {
         equalizer_page_ = value;

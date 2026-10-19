@@ -48,6 +48,13 @@ lookup. The UI check covers R3 switching, smooth phrase following and seeks.
 These host checks do not establish network availability or perceived surround
 levels on a particular PS5 and audio system.
 
+Speaker checks cover all eight independent channels and migration of earlier
+upmix settings, including mute. A controlled HTTP 503 checks automatic lyrics
+retry; repeated R3 reopening checks reuse of the ready lyrics object without
+publishing a loading state. UI checks also cover full-width two-digit gain
+labels, instant selection of all 40 accents, and right-stick master volume on
+album, settings, visualizer and lyrics screens.
+
 For UI snapshots, fetch the public album metadata and artwork into the ignored
 preview cache. No album artwork or audio recording is part of the application
 assets:

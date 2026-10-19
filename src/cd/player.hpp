@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 #include "app/archive_catalog.hpp"
+#include "app/accent_palette.hpp"
 #include "cd/disc.hpp"
 #include "cd/sound.hpp"
 #include "cd/dsp.hpp"
@@ -36,6 +37,7 @@ struct Snapshot
     bool show_eject_button = true;
     bool oled_visualizer = false;
     unsigned visualization = 1;
+    unsigned accent_color = 0;
     float volume = 1;
     uint64_t revision = 0, cover_revision = 0, underruns = 0;
     std::shared_ptr<const std::vector<uint8_t>> cover;
@@ -57,6 +59,7 @@ class Player
     std::atomic<bool> show_eject_button_{true};
     std::atomic<bool> oled_visualizer_{false};
     std::atomic<unsigned> visualization_{1};
+    std::atomic<unsigned> accent_color_{0};
     VisualRotation rotation_;
     std::array<std::atomic<uint64_t>, 100> track_starts_{};
     AudioFrame held_frame_{};
@@ -130,6 +133,7 @@ class Player
     }
     void show_eject_button(bool value) { show_eject_button_.store(value); }
     void oled_visualizer(bool value) { oled_visualizer_.store(value); }
+    void accent_color(unsigned value) { accent_color_.store(std::min(value, unsigned(accent_colors.size()-1))); }
     void autoplay(bool value) { autoplay_.store(value); }
     void visual_rotation(bool value)
     {

@@ -23,8 +23,7 @@ using namespace hui;
 
 namespace
 {
-const gfx::Color ink = gfx::Color::rgb(0xffffff), muted = gfx::Color::rgb(0x999999),
-                 accent = gfx::Color::rgb(0xd71920);
+const gfx::Color ink = gfx::Color::rgb(0xffffff), muted = gfx::Color::rgb(0x999999);
 
 float gain_db(float gain)
 {
@@ -74,6 +73,21 @@ Screen::~Screen()
         glDeleteTextures(1, &pending_cover_);
     if (cover_)
         glDeleteTextures(1, &cover_);
+}
+
+void Screen::apply_accent(unsigned index)
+{
+    accent_index_ = std::min(index, unsigned(accent_colors.size()-1));
+    accent = gfx::Color::rgb(accent_colors[accent_index_].rgb);
+    theme_.primary = theme_.accent = theme_.focus = accent;
+    tracks_.style.theme = actions_.style.theme = preferences_.style.theme = speakers_.style.theme = theme_;
+}
+
+ui::GlyphStyle Screen::dot_style() const
+{
+    auto style = ui::GlyphStyle::dots();
+    style.label = accent;
+    return style;
 }
 
 bool Screen::load_font(const std::string &path, gfx::Font &font, ui::FontRef &ref)
@@ -193,6 +207,7 @@ bool Screen::init(const std::string &assets)
     preferences_.style.header_height = 38;
     preferences_.style.label_size = 25;
     preferences_.style.value_size = 24;
+    preferences_.style.number_width = 136;
     preferences_.style.header_size = 20;
     preferences_.style.sounds.rumble = 0;
     preferences_.style.toggle_text = false;
@@ -204,6 +219,18 @@ bool Screen::init(const std::string &assets)
     preferences_.style.control_width = 342;
     preferences_.style.highlight.kind = ui::HighlightKind::ring;
     preferences_.set_bounds({1034, 186, 758, 732});
+    speakers_.style = preferences_.style;
+    speakers_.set_bounds({1034, 186, 758, 732});
+    const size_t order[] = {0, 1, 2, 4, 5, 6, 7, 3};
+    const char *names[] = {"Front left", "Front right", "Center", "Surround left",
+                           "Surround right", "Side left", "Side right", "Subwoofer (LFE)"};
+    for (size_t i = 0; i < 8; ++i)
+    {
+        auto &row = speakers_.add_slider(int(order[i]), names[i], 0, -49, 24, 1);
+        row.format = gain_label;
+        row.description = order[i] < 2 ? "Original front channel; 0 dB keeps its current level"
+            : "Generated upmix channel; 0 dB keeps its original level";
+    }
     return true;
 }
 
@@ -219,15 +246,14 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
         eq.text = "10 bands";
         preferences_.add_toggle(1, "Upmix 7.1", dsp.upmix()).description =
             "Surround derived from stereo audio";
-        auto &surround = preferences_.add_slider(12, "Surround gain", gain_db(dsp.surround_gain()), -49, 24, 1);
-        surround.format = gain_label;
-        surround.description = "Center and surround speakers; 0 dB keeps the original level";
-        auto &subwoofer = preferences_.add_slider(13, "Subwoofer gain", gain_db(dsp.lfe_gain()), -49, 24, 1);
-        subwoofer.format = gain_label;
-        subwoofer.description = "Independent bass channel gain; 0 dB keeps the original level";
+        auto &speakers = preferences_.add_action(12, "Speaker setup");
+        speakers.chevron = true;
+        speakers.description = "Adjust the eight speaker levels independently";
         preferences_.add_toggle(2, "Gapless playback", gapless_);
         preferences_.add_toggle(8, "Autoplay disc", snapshot.autoplay);
-        preferences_.add_slider(5, "Volume", snapshot.volume * 100, 0, 100, 5).unit = " %";
+        auto &volume = preferences_.add_slider(5, "Volume", snapshot.volume * 100, 0, 100, 5);
+        volume.unit = " %";
+        volume.description = "Right stick up/down adjusts volume";
         preferences_.add_header("Visualization");
         preferences_.add_toggle(3, "Reduced motion", reduced_motion_);
         preferences_.add_choice(4, "Visualizer", Visualizer::names(), visual_ - 1);
@@ -247,14 +273,22 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
                                    snapshot.editions.empty() ? "Not available"
                                                              : snapshot.editions.front().date);
         preferences_.add_header("Interface");
+        std::vector<std::string> color_names;
+        for (const auto &color : accent_colors) color_names.emplace_back(color.name);
+        auto &color = preferences_.add_choice(14, "Accent color", std::move(color_names), int(accent_index_));
+        color.choice.option = [](ui::Canvas &canvas, const gfx::Rect &area, int index, float)
+        {
+            const auto &color = accent_colors[size_t(index)];
+            const float size = 24, swatch = 22, gap = 12;
+            const float text_width = canvas.fonts.display.measure(color.name, size);
+            const float x = area.cx()-(swatch+gap+text_width)*.5f;
+            canvas.list.rounded_rect({x, area.cy()-swatch*.5f, swatch, swatch}, 0, gfx::Color::rgb(color.rgb));
+            ui::text(canvas.list, canvas.fonts.display, color.name, x+swatch+gap,
+                     area.cy()+size*.35f, size, ink);
+        };
         preferences_.add_toggle(10, "Show Eject button", snapshot.show_eject_button);
-        preferences_.add_value(9, "Designed by Andrea Sgarro", "");
     }
     preferences_.set_disabled(1, audio_channels_ != 8);
-    preferences_.set_disabled(12, audio_channels_ != 8 || !dsp.upmix());
-    preferences_.set_disabled(13, audio_channels_ != 8 || !dsp.upmix());
-    preferences_.set_slider(12, gain_db(dsp.surround_gain()));
-    preferences_.set_slider(13, gain_db(dsp.lfe_gain()));
     preferences_.set_toggle(1, dsp.upmix());
     preferences_.set_toggle(2, gapless_);
     preferences_.set_toggle(3, reduced_motion_);
@@ -263,6 +297,7 @@ void Screen::refresh_preferences(const Snapshot &snapshot, Dsp &dsp)
     preferences_.set_toggle(8, snapshot.autoplay);
     preferences_.set_toggle(10, snapshot.show_eject_button);
     preferences_.set_toggle(11, snapshot.oled_visualizer);
+    preferences_.set_choice(14, int(accent_index_));
     preferences_.set_slider(5, snapshot.volume * 100);
     preferences_.set_active(true);
 }
@@ -270,6 +305,8 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
 {
     last_dt_ = std::isfinite(dt) ? std::clamp(dt, 0.f, .25f) : 0;
     dt = std::min(last_dt_, .05f);
+    volume_feedback_ = std::max(0.f, volume_feedback_-last_dt_);
+    if (accent_index_ != snapshot.accent_color) apply_accent(snapshot.accent_color);
     settings_amount_.target = settings_ ? 1.f : 0.f;
     if (reduced_motion_)
         settings_amount_.snap(settings_amount_.target);
@@ -401,7 +438,16 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
         }
     }
     if (settings_)
+    {
         refresh_preferences(snapshot, dsp);
+        preferences_.set_active(!speaker_page_);
+        for (size_t c = 0; c < 8; ++c)
+        {
+            speakers_.set_slider(int(c), gain_db(dsp.channel_gain(c)));
+            speakers_.set_disabled(int(c), c >= 2 && (audio_channels_ != 8 || !dsp.upmix()));
+        }
+    }
+    speakers_.set_active(settings_ && speaker_page_);
 
     tracks_.set_active(!toolbar_ && !cover_focus_ && !album_panel_ && !full_ && !settings_ && !equalizer_page_);
     actions_.set_active(toolbar_ && !cover_focus_ && !album_panel_ && !full_ && !settings_ && !equalizer_page_);
@@ -409,6 +455,7 @@ void Screen::update(float dt, const Snapshot &snapshot, Dsp &dsp)
     tracks_.update(dt);
     actions_.update(dt);
     preferences_.update(dt);
+    speakers_.update(dt);
     if (lyrics_page_)
         update_lyrics(dt, snapshot);
 }
@@ -503,7 +550,7 @@ void Screen::draw_lyrics(const Snapshot &snapshot, const std::string &clock)
         const ui::Hint hints[] = {{ui::Button::circle, "Back"}, {ui::Button::cross, "Play / pause"},
                                  {ui::Button::r3, "Visualizer"}, {ui::Button::dpad, "Scroll"}};
         const int count = shown_lyrics_ && !shown_lyrics_->synced && !shown_lyrics_->instrumental ? 4 : 3;
-        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, count, 96, false);
+        ui::draw_hints(page_, fonts_, dot_style(), hints, count, 96, false);
         page_.pop_opacity();
     }
 }
@@ -516,6 +563,13 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
 
         std::abs(input.stick2_x) > .1f || std::abs(input.stick2_y) > .1f)
         idle_ = 0;
+
+    if (std::isfinite(input.stick2_y) && std::abs(input.stick2_y) > .25f)
+    {
+        const float amount = std::copysign((std::abs(input.stick2_y)-.25f)/.75f, input.stick2_y);
+        player.volume(std::clamp(player.volume()-amount*.35f*std::min(last_dt_,.05f), 0.f, 1.f));
+        volume_feedback_ = 1.8f;
+    }
 
     if (input.is_pressed(Action::north))
     {
@@ -534,6 +588,7 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
     if (input.is_pressed(Action::menu))
     {
         settings_ = !settings_;
+        speaker_page_ = false;
         album_panel_ = false;
         full_ = false;
         lyrics_page_ = false;
@@ -550,6 +605,7 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
         player.lyrics_visible(false);
         album_panel_ = false;
         settings_ = false;
+        speaker_page_ = false;
         equalizer_page_ = false;
         feedback.play(audio::Cue::select);
         return;
@@ -620,6 +676,18 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
     }
     if (settings_)
     {
+        if (speaker_page_)
+        {
+            if (input.is_pressed(Action::back))
+            {
+                speaker_page_ = false;
+                feedback.play(audio::Cue::back);
+                return;
+            }
+            if (speakers_.handle(input, feedback) == ui::Event::changed)
+                dsp.channel_gain(size_t(speakers_.changed_id()), db_gain(speakers_.slider_value(speakers_.changed_id())));
+            return;
+        }
         if (input.is_pressed(Action::back))
         {
             settings_ = false;
@@ -627,9 +695,6 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
             return;
         }
 
-        // Designer credit is focusable information, without activation or refusal feedback.
-        if (preferences_.focus_id() == 9 && input.is_pressed(Action::confirm))
-            return;
         ui::Form &form = preferences_;
         const auto event = form.handle(input, feedback);
 
@@ -639,6 +704,11 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
         {
             equalizer_page_ = true;
             settings_ = false;
+            return;
+        }
+        if (event == ui::Event::activated && id == 12)
+        {
+            speaker_page_ = true;
             return;
         }
 
@@ -678,10 +748,11 @@ void Screen::handle(const InputFrame &input, ui::Feedback &feedback, Player &pla
                 player.show_eject_button(form.toggle_value(10));
             if (id == 11)
                 player.oled_visualizer(form.toggle_value(11));
-            if (id == 12)
-                dsp.surround_gain(db_gain(form.slider_value(12)));
-            if (id == 13)
-                dsp.lfe_gain(db_gain(form.slider_value(13)));
+            if (id == 14)
+            {
+                player.accent_color(unsigned(form.choice_index(14)));
+                apply_accent(unsigned(form.choice_index(14)));
+            }
         }
 
         return;
@@ -869,7 +940,7 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
                             {ui::Button::cross, "Reset / select"},
                             {ui::Button::circle, "Settings"}};
 
-        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 3, 96, false);
+        ui::draw_hints(page_, fonts_, dot_style(), hints, 3, 96, false);
     }
     else if (full_ && lyrics_page_)
         draw_lyrics(snapshot, clock);
@@ -920,7 +991,7 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         if (hint_opacity > 0)
         {
             page_.push_opacity(hint_opacity);
-            ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints, 4, 96, false);
+            ui::draw_hints(page_, fonts_, dot_style(), hints, 4, 96, false);
             page_.pop_opacity();
         }
     }
@@ -1030,7 +1101,7 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         layout.cy = 1025;
         layout.item_gap = 32;
 
-        ui::draw_hints(page_, fonts_, ui::GlyphStyle::dots(), hints.data(), int(hints.size()), 96, false, layout);
+        ui::draw_hints(page_, fonts_, dot_style(), hints.data(), int(hints.size()), 96, false, layout);
     }
 
     renderer_.begin();
@@ -1047,17 +1118,18 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         overlay_.push_transform(1, 0, 0, (1 - amount) * 940, 0);
         overlay_.shadow({998, 78, 826, 930}, 26, 44, {0, 0, 0, .48f});
         overlay_.rounded_rect({998, 78, 826, 930}, 26, gfx::Color::rgb(0x1c1c1c));
-        ui::text(overlay_, fonts_.display, "Settings", 1056, 148, 40, ink);
+        ui::text(overlay_, fonts_.display, speaker_page_ ? "Speaker setup" : "Settings", 1056, 148, 40, ink);
         ui::Canvas canvas{overlay_, fonts_, 0, time_};
-        preferences_.draw(canvas);
-        ui::text(overlay_, fonts_.regular, doto_.fit(preferences_.help_text(), 21, 700), 1058,
+        auto &form = speaker_page_ ? speakers_ : preferences_;
+        form.draw(canvas);
+        ui::text(overlay_, fonts_.regular, doto_.fit(form.help_text(), 21, 700), 1058,
                  948, 21, muted);
         ui::Hint hints[] = {{ui::Button::dpad, "Adjust"}, {ui::Button::circle, "Back"}};
         ui::HintLayout layout;
         layout.cy = 979;
         layout.size = 28;
         layout.text_size = 21;
-        ui::draw_hints(overlay_, fonts_, ui::GlyphStyle::dots(), hints, 2, 1056, false, layout);
+        ui::draw_hints(overlay_, fonts_, dot_style(), hints, 2, 1056, false, layout);
         overlay_.pop_transform();
         overlay_.pop_opacity();
         renderer_.draw(overlay_);
@@ -1168,9 +1240,20 @@ void Screen::draw(const Snapshot &snapshot, const std::array<float, 32> &spectru
         ui::HintLayout layout;
         layout.size = 28; layout.text_size = 20;
         layout.cy = 963 - layout.text_size * .35f;
-        ui::draw_hints(overlay_, fonts_, ui::GlyphStyle::dots(), hints, 1, 144, false, layout);
+        ui::draw_hints(overlay_, fonts_, dot_style(), hints, 1, 144, false, layout);
         overlay_.pop_transform();
         overlay_.pop_opacity();
+        renderer_.draw(overlay_);
+    }
+    if (volume_feedback_ > 0)
+    {
+        overlay_.clear();
+        const auto label = "Volume " + std::to_string(int(std::round(snapshot.volume*100))) + "%";
+        const float opacity = std::min(1.f, volume_feedback_/.3f);
+        const float text_width = fonts_.display.measure(label, 23);
+        overlay_.rounded_rect({1808-text_width, 997, text_width+32, 48}, 10, {0,0,0,.8f*opacity});
+        ui::text(overlay_, fonts_.display, label, 1824, 1025, 23,
+                 ink.with_alpha(opacity), gfx::Align::right);
         renderer_.draw(overlay_);
     }
     (void)dsp;

@@ -3,8 +3,12 @@
 ## 1.1.1
 
 - Keep the music playing when the controller turns off, disconnects, or the system temporarily takes controller input. Play/Pause still works as usual when the controller is connected.
-- Adjust the generated surround and subwoofer levels separately, from mute to +24 dB. Front left and right levels stay unchanged.
+- Balance all eight outputs independently in Speaker setup, within the settings drawer. Saved upmix gains carry over; fronts remain at their original level unless their own controls are adjusted. Two-digit gain labels remain fully visible.
 - Press R3 in the fullscreen visualizer to switch to lyrics. Timed phrases follow playback with smooth scrolling; untimed lyrics can be scrolled manually.
+- Retry temporary lyrics-service errors automatically while keeping the loading screen visible.
+- Reopen already loaded lyrics without a loading flash.
+- Adjust master volume with the right stick from any screen, with a brief level display.
+- Pick one of 40 named accent colors in settings. Changes apply immediately and are saved.
 
 ## 1.1.0
 
