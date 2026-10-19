@@ -15,7 +15,7 @@ Put a CD in, settle into your favourite chair, and listen.
 Designed by **Andrea Sgarro**.
 
 [Download the latest release](https://github.com/LoZazaMastro/CD-Player/releases/latest)
-| [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
+| [What's new](CHANGELOG.md) | [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
 
 ![Blunderbuss by Jack White in CD Player](docs/screenshots/album.png)
 
@@ -52,6 +52,10 @@ after two seconds without input, leaving the music, the picture and the clock.
 | Album notes | Five-button layout |
 | --- | --- |
 | ![Album notes for Blunderbuss](docs/screenshots/album-info.png) | ![Transport with Eject hidden](docs/screenshots/album-no-eject.png) |
+
+| The back of the case | Individual speaker levels |
+| --- | --- |
+| ![Blunderbuss back cover and printed disc](docs/screenshots/album-back.png) | ![Eight individual speaker controls](docs/screenshots/speaker-setup.png) |
 
 ![Fullscreen visualizer with Jack White metadata](docs/screenshots/visualizer.png)
 
