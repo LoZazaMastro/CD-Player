@@ -22,6 +22,7 @@ Designed by **Andrea Sgarro**.
 ## A player made for listening
 
 - Play audio CDs from a compatible external USB optical drive, including Apple USB SuperDrive.
+- Keep listening when the controller turns off or disconnects.
 - Find album artwork, artist, year, track titles and editions through MusicBrainz and Cover Art Archive. CD-Text is used when available.
 - Open the album cover to read a description, when one is available. Notes come from MusicBrainz or its linked English Wikipedia article.
 - Enjoy a reflective 3D disc that enters with the album, accelerates into playback and slows down gently when paused.

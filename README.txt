@@ -115,3 +115,7 @@ After one idle minute with playback stopped it shows a black screen; any input
 restores the picture. OLED mode is remembered between launches.
 Visualizer timing follows the display, with a compiled frame function and
 reusable buffers. Terminal effects include monospaced box-drawing characters.
+
+VERSION 1.1.1
+Music keeps playing when the controller turns off or disconnects, including
+when the system temporarily takes controller input. Play/Pause remains manual.

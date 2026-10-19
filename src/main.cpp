@@ -110,8 +110,8 @@ int main()
             hui::sys::log("[CD] display accepted %dx%d @ %d Hz", display.width(), display.height(),
                           display.refresh());
         }
-        if (input.focus_lost && state.playing)
-            player.toggle_pause();
+        // Controller disconnection or system input interception must not pause music.
+        // Playback is controlled by the transport, independently of pad ownership.
         // Hold Options and Circle for a clean exit; screenshot/Share remains owned by the system.
         if (input.is_held(hui::Action::menu) && input.is_pressed(hui::Action::back))
             break;

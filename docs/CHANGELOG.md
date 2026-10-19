@@ -1,5 +1,9 @@
 # Changes
 
+## 1.1.1
+
+- Keep the music playing when the controller turns off, disconnects, or the system temporarily takes controller input. Play/Pause still works as usual when the controller is connected.
+
 ## 1.1.0
 
 - Bring the playing track into view at each track change, while leaving manual browsing free during playback and pause.
