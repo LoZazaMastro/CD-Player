@@ -59,6 +59,10 @@ after two seconds without input, leaving the music, the picture and the clock.
 
 ![Fullscreen visualizer with Jack White metadata](docs/screenshots/visualizer.png)
 
+![Fullscreen lyrics with the current phrase highlighted](docs/screenshots/lyrics.png)
+
+Lyrics view with sample text to show phrase highlighting and scrolling.
+
 The screenshots are rendered by the app's own preview build, using the same
 interface and shaders as the PS5 version, with **Blunderbuss by Jack White**.
 Album artwork belongs to its rightsholders; it is downloaded when needed and
