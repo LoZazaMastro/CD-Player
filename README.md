@@ -15,7 +15,7 @@ Put a CD in, settle into your favourite chair, and listen.
 Designed by **Andrea Sgarro**.
 
 [Download the latest release](https://github.com/LoZazaMastro/CD-Player/releases/latest)
-| [What's new](CHANGELOG.md) | [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
+| [What's new](docs/CHANGELOG.md) | [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
 
 ![Blunderbuss by Jack White in CD Player](docs/screenshots/album.png)
 
