@@ -10,6 +10,10 @@ Import PPSA98427.zip using your usual homebrew installation method.
 The ZIP contains one PPSA98427 folder. Copy it into /data/homebrew so that
 eboot.bin is at /data/homebrew/PPSA98427/eboot.bin, without another nested folder.
 Update the application only while CD Player is closed.
+Version 1.1.2 fixes an oversized storage reservation. If an older installation
+still occupies about 18 GB, remove CD Player through the PS5 storage settings
+and install the new release again. Replacing files alone does not shrink the
+existing allocation. Reinstallation may reset settings and cached artwork.
 The package preserves the open permissions required by the homebrew loader.
 
 USB CD DRIVES AND APPLE SUPERDRIVE
@@ -146,7 +150,7 @@ restores the picture. OLED mode is remembered between launches.
 Visualizer timing follows the display, with a compiled frame function and
 reusable buffers. Terminal effects include monospaced box-drawing characters.
 
-VERSION 1.1.1
+VERSION 1.1.2
 Music keeps playing when the controller turns off or disconnects, including
 when the system temporarily takes controller input. Play/Pause remains manual.
 Speaker setup provides saved, independent gain controls for all eight outputs.

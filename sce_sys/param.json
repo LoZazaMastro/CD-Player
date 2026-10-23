@@ -10,8 +10,8 @@
   "conceptId": "98427",
   "contentBadgeType": 2,
   "contentId": "UP9000-PPSA98427_00-CDPLAYER00000001",
-  "contentVersion": "01.001.001",
-  "downloadDataSize": 16384,
+  "contentVersion": "01.001.002",
+  "downloadDataSize": 256,
   "localizedParameters": {
     "defaultLanguage": "it-IT",
     "it-IT": {

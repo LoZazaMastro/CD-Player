@@ -12,7 +12,7 @@ CD Player is a native PS5 homebrew app built around the album: a large cover,
 a reflective spinning disc, a clear track list and a minimal digital interface.
 Put a CD in, settle into your favourite chair, and listen.
 
-Designed by **Andrea Sgarro**.
+Designed by **LoZazaMastro**.
 
 [Download the latest release](https://github.com/LoZazaMastro/CD-Player/releases/latest)
 | [What's new](docs/CHANGELOG.md) | [Installation](#installation) | [Controls](#controls) | [Build from source](docs/BUILDING.md)
@@ -82,6 +82,12 @@ console's internal disc drive.
 Close CD Player before replacing its files. The ZIP records the open file
 permissions required by the homebrew loader. If your FTP client changes them,
 set the app folder and its contents to `0777`.
+
+**Updating to 1.1.2:** this release fixes an oversized storage reservation.
+If an older installation still occupies about 18 GB, remove CD Player through
+the PS5's storage settings, then install the new release again. Replacing the
+files alone does not shrink an existing reservation. Reinstallation may reset
+saved settings and cached artwork.
 
 The included one-shot access helper is restricted to this app's title ID.
 Your homebrew environment may need a local ELF loader on port **9021**.

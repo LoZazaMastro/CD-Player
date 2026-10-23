@@ -16,6 +16,7 @@ def sha(path):
 param = json.loads((APP / 'sce_sys/param.json').read_text(encoding='utf-8'))
 assert param == json.loads((ROOT / 'sce_sys/param.json').read_text(encoding='utf-8')), 'Rebuild/copy the current application metadata first'
 assert param['titleId'] == TITLE and param['conceptId'] == TITLE[4:]
+assert param.get('downloadDataSize') == 256, 'Incorrect /download0 reservation; expected 256 MiB'
 assert param['contentId'] == 'UP9000-PPSA98427_00-CDPLAYER00000001'
 assert param['applicationCategoryType'] == 65536 and param['contentBadgeType'] == 2
 assert 'gameIntent' not in param

@@ -1,5 +1,15 @@
 # Changes
 
+## 1.1.2
+
+Fixes the oversized storage reservation that made CD Player occupy about 18 GB
+on PS5. The app now reserves 256 MiB for its data instead of 16 GiB.
+
+Tested on PS5 firmware 13.60. To reclaim space from an older installation,
+remove CD Player through the PS5's storage settings and install this release
+again. Replacing the app files alone does not shrink the existing allocation.
+Reinstallation may reset settings and cached artwork.
+
 ## 1.1.1
 
 More ways to enjoy your music, with lyrics, finer sound controls and artwork that makes each CD feel like your own.
