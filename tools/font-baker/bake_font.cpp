@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // usage: bake_font <font.ttf> <out.huifont> [pixel_size=56] [sdf_range=8] [atlas=1024]
-//                  [glyphs=basic|european|visualizer]
+//                  [glyphs=basic|european|visualizer|chinese]
 // Bakes printable ASCII plus a few UI symbols into a single-channel signed
 // distance field atlas with metrics and kerning (see src/gfx/font_format.hpp).
 
@@ -18,6 +18,7 @@
 #include <cstring>
 #include <fstream>
 #include <iterator>
+#include <thread>
 #include <vector>
 
 namespace
@@ -43,7 +44,9 @@ struct Baked
 // U+0386 to U+03CE, U+0410 to U+044F, Io), curly quotation marks, the euro
 // and the trade mark sign: about 450 more glyphs, which need a 2048 atlas at
 // 56 pixels. A face without Greek (Montserrat) simply skips those letters.
-std::vector<int> codepoints(bool european, bool visualizer)
+// chinese adds CJK punctuation, fullwidth forms, Hiragana, Katakana, and all
+// CJK Unified Ideographs present in the font (up to ~20,000 glyphs for 4096 atlas).
+std::vector<int> codepoints(bool european, bool visualizer, bool chinese, const stbtt_fontinfo *font = nullptr)
 {
     std::vector<int> result;
     for (int c = 32; c < 127; ++c)
@@ -67,6 +70,30 @@ std::vector<int> codepoints(bool european, bool visualizer)
     if (visualizer)
         for (int c = 0x2500; c <= 0x259F; ++c)
             result.push_back(c); // box drawing and block/shade cells
+    if (chinese)
+    {
+        // General punctuation & quotes (U+2000..U+206F)
+        for (int c = 0x2000; c <= 0x206F; ++c)
+            result.push_back(c);
+        // CJK Symbols and Punctuation (U+3000..U+303F)
+        for (int c = 0x3000; c <= 0x303F; ++c)
+            result.push_back(c);
+        // Hiragana & Katakana (U+3040..U+30FF)
+        for (int c = 0x3040; c <= 0x30FF; ++c)
+            result.push_back(c);
+        // Fullwidth Forms & ASCII (U+FF00..U+FFEF)
+        for (int c = 0xFF00; c <= 0xFFEF; ++c)
+            result.push_back(c);
+        // Musical notes
+        result.push_back(0x266A); // ♪
+        result.push_back(0x266B); // ♫
+        // CJK Unified Ideographs (U+4E00..U+9FFF)
+        for (int c = 0x4E00; c <= 0x9FFF; ++c)
+        {
+            if (font == nullptr || stbtt_FindGlyphIndex(font, c) != 0)
+                result.push_back(c);
+        }
+    }
     // Middle dot, multiplication sign, copyright, degree, en/em dash, bullet,
     // ellipsis, arrows, check mark, and (in fonts that have them) a full
     // block, a black circle and four pointing triangles. Glyphs a font lacks
@@ -95,13 +122,14 @@ int main(int argc, char **argv)
 {
     if (argc < 3)
     {
-        std::fprintf(stderr, "usage: %s font.ttf out.huifont [pixel_size] [sdf_range] [atlas] [basic|european|visualizer]\n", argv[0]);
+        std::fprintf(stderr, "usage: %s font.ttf out.huifont [pixel_size] [sdf_range] [atlas] [basic|european|visualizer|chinese]\n", argv[0]);
         return 2;
     }
     const float pixel_size = argc > 3 ? std::strtof(argv[3], nullptr) : 56.0f;
     const int range = argc > 4 ? std::atoi(argv[4]) : 8;
     const int atlas_size = argc > 5 ? std::atoi(argv[5]) : 1024;
     const bool visualizer = argc > 6 && std::strcmp(argv[6], "visualizer") == 0;
+    const bool chinese = argc > 6 && (std::strcmp(argv[6], "chinese") == 0 || std::strcmp(argv[6], "cjk") == 0);
     const bool european = visualizer || (argc > 6 && std::strcmp(argv[6], "european") == 0);
 
     std::ifstream input(argv[1], std::ios::binary);
@@ -114,25 +142,42 @@ int main(int argc, char **argv)
     }
     const float scale = stbtt_ScaleForMappingEmToPixels(&font, pixel_size);
 
-    std::vector<Baked> glyphs;
-    for (int codepoint : codepoints(european, visualizer))
+    const auto all_codepoints = codepoints(european, visualizer, chinese, &font);
+    std::vector<int> valid_codepoints;
+    for (int codepoint : all_codepoints)
     {
         if (codepoint != ' ' && stbtt_FindGlyphIndex(&font, codepoint) == 0)
         {
-            std::fprintf(stderr, "skipping U+%04X (not in font)\n", codepoint);
+            if (!chinese)
+                std::fprintf(stderr, "skipping U+%04X (not in font)\n", codepoint);
             continue;
         }
-        Baked glyph;
-        glyph.codepoint = codepoint;
-        int advance = 0;
-        int bearing = 0;
-        stbtt_GetCodepointHMetrics(&font, codepoint, &advance, &bearing);
-        glyph.advance = static_cast<float>(advance) * scale;
-        glyph.bitmap = stbtt_GetCodepointSDF(&font, scale, codepoint, range, 128,
-                                             128.0f / static_cast<float>(range), &glyph.w, &glyph.h,
-                                             &glyph.xoff, &glyph.yoff);
-        glyphs.push_back(glyph);
+        valid_codepoints.push_back(codepoint);
     }
+
+    std::vector<Baked> glyphs(valid_codepoints.size());
+    const unsigned num_threads = std::max(1u, std::thread::hardware_concurrency());
+    std::vector<std::thread> workers;
+    for (unsigned t = 0; t < num_threads; ++t)
+    {
+        workers.emplace_back([&, t]() {
+            for (std::size_t i = t; i < valid_codepoints.size(); i += num_threads)
+            {
+                int codepoint = valid_codepoints[i];
+                Baked &glyph = glyphs[i];
+                glyph.codepoint = codepoint;
+                int advance = 0;
+                int bearing = 0;
+                stbtt_GetCodepointHMetrics(&font, codepoint, &advance, &bearing);
+                glyph.advance = static_cast<float>(advance) * scale;
+                glyph.bitmap = stbtt_GetCodepointSDF(&font, scale, codepoint, range, 128,
+                                                     128.0f / static_cast<float>(range), &glyph.w, &glyph.h,
+                                                     &glyph.xoff, &glyph.yoff);
+            }
+        });
+    }
+    for (auto &w : workers)
+        w.join();
 
     // Shelf packing, tallest first, one pixel of spacing.
     std::vector<Baked *> order;
@@ -172,15 +217,18 @@ int main(int argc, char **argv)
     }
 
     std::vector<ff::Kern> kerns;
-    for (const Baked &a : glyphs)
+    if (font.kern != 0)
     {
-        for (const Baked &b : glyphs)
+        for (const Baked &a : glyphs)
         {
-            const int kern = stbtt_GetCodepointKernAdvance(&font, a.codepoint, b.codepoint);
-            if (kern != 0)
-                kerns.push_back(ff::Kern{static_cast<std::uint32_t>(a.codepoint),
-                                         static_cast<std::uint32_t>(b.codepoint),
-                                         static_cast<float>(kern) * scale});
+            for (const Baked &b : glyphs)
+            {
+                const int kern = stbtt_GetCodepointKernAdvance(&font, a.codepoint, b.codepoint);
+                if (kern != 0)
+                    kerns.push_back(ff::Kern{static_cast<std::uint32_t>(a.codepoint),
+                                             static_cast<std::uint32_t>(b.codepoint),
+                                             static_cast<float>(kern) * scale});
+            }
         }
     }
 

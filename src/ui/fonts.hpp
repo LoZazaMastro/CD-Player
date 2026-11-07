@@ -37,6 +37,7 @@ struct Fonts
     FontRef mono;     // DejaVu Sans Mono: numbers that must not jump, terminals
     FontRef pixel;    // Press Start 2P: an 8x8 bitmap face (the Pixel theme)
     FontRef hand;     // Patrick Hand: handwriting (the Sketch theme)
+    FontRef chinese;  // Fusion Pixel: dot-matrix Chinese font for CJK CD info
 };
 
 // Draws one line with its baseline at y; x is the left edge, centre or right
