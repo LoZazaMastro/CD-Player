@@ -90,6 +90,7 @@ project adds.
 | DejaVu Sans Mono | `third_party/fonts/DejaVuSansMono.ttf` | (c) 2003 Bitstream, Inc.; DejaVu changes are public domain | Bitstream Vera licence (`DejaVu-LICENSE.txt`) |
 | Press Start 2P | `third_party/fonts/PressStart2P-Regular.ttf` | (c) 2012 The Press Start 2P Project Authors | SIL Open Font License 1.1 (`PressStart2P-LICENSE.txt`) |
 | Patrick Hand | `third_party/fonts/PatrickHand-Regular.ttf` | (c) 2010-2012 Patrick Wagesreiter | SIL Open Font License 1.1 (`PatrickHand-LICENSE.txt`) |
+| Dotted Songti Square | `third_party/fonts/DottedSongtiSquareRegular.otf` | (c) 2020 wixette, WenQuanYi Project Authors | GNU General Public License v2.0 (`DottedSongti-LICENSE.txt`) |
 
 `assets/fonts/*.huifont` are distance-field renderings of these typefaces
 produced by `tools/bake-fonts.sh`; the licence texts ship beside them.

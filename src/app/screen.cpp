@@ -10,6 +10,7 @@
 #include "app/visualizer_presentation.hpp"
 
 #include "core/save_file.hpp"
+#include "platform/ps5/system.hpp"
 
 #include <algorithm>
 
@@ -119,10 +120,20 @@ bool Screen::load_font(const std::string &path, gfx::Font &font, ui::FontRef &re
 {
     std::string bytes;
 
-    if (!save::read_file(path, &bytes) || !font.load(bytes))
+    if (!save::read_file(path, &bytes, 64u << 20))
+    {
+        sys::log("[CD Font] read failed: %s", path.c_str());
         return false;
+    }
+    if (!font.load(bytes))
+    {
+        sys::log("[CD Font] load failed: %s: %s", path.c_str(), font.error().c_str());
+        return false;
+    }
 
     ref = {&font, renderer_.batch().create_font_texture(font)};
+    sys::log("[CD Font] loaded %s (glyphs=%zu, tex=%08x)", path.c_str(),
+             font.glyphs().size(), ref.texture);
     return true;
 }
 
@@ -139,6 +150,17 @@ bool Screen::init(const std::string &assets)
 
     if (!load_font(assets + "/fonts/doto-semibold.huifont", doto_, fonts_.display))
         return false;
+    if (load_font(assets + "/fonts/dotted-songti.huifont", chinese_, fonts_.chinese))
+    {
+        doto_.add_fallback(&chinese_, fonts_.chinese.texture);
+        regular_.add_fallback(&chinese_, fonts_.chinese.texture);
+        semibold_.add_fallback(&chinese_, fonts_.chinese.texture);
+        sys::log("[CD Font] Dotted Songti font registered (tex=%08x)", fonts_.chinese.texture);
+    }
+    else
+    {
+        sys::log("[CD Font] Chinese font not found, continuing without fallback");
+    }
     doto_.add_fallback(&regular_, fonts_.regular.texture);
     fonts_.regular=fonts_.display;fonts_.semibold=fonts_.display;
     if (!load_font(assets + "/fonts/visualizer-mono.huifont", visual_mono_, fonts_.mono))

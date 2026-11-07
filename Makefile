@@ -64,6 +64,7 @@ test:
 	@bash tools/test-player.sh
 	@bash tools/test-album-info.sh
 	@bash tools/test-numeric-locale.sh
+	@bash tools/test-chinese-font.sh
 test-archive:
 	@bash tools/preview.sh
 	@bash tools/test-archive.sh

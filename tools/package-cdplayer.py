@@ -41,17 +41,24 @@ for name in ('dejavu-sans-mono.huifont', 'montserrat-medium.huifont', 'patrick-h
 required = ['eboot.bin', 'sce_module/libc.prx', 'sce_sys/param.json', 'sce_sys/icon0.png', 'sce_sys/pic0.dds', 'sce_sys/pic1.dds',
             'lapy.elf', 'lapy-manifest.json', 'assets/fonts/doto-semibold.huifont', 'assets/fonts/inter-regular.huifont',
             'assets/fonts/inter-semibold.huifont', 'assets/fonts/visualizer-mono.huifont',
+            'assets/fonts/dotted-songti.huifont', 'assets/fonts/DottedSongti-LICENSE.txt',
             'assets/fonts/DejaVu-LICENSE.txt', 'assets/fonts/Doto-OFL.txt', 'licenses/PSSwanStation-ADDITIONAL-TERMS.txt']
+(APP / 'assets/fonts/fusion-pixel.huifont').unlink(missing_ok=True)
+(APP / 'assets/fonts/FusionPixel-OFL.txt').unlink(missing_ok=True)
+(APP / 'assets/fonts/jinzishe-tongfang.huifont').unlink(missing_ok=True)
+(APP / 'assets/fonts/JinzisheTongfang-OFL.txt').unlink(missing_ok=True)
 required += ['assets/disc/engraving.png', 'licenses/curl-LICENSE.txt', 'licenses/OpenSSL-LICENSE.txt',
              'licenses/libpsl-LICENSE.txt', 'licenses/zstd-LICENSE.txt']
 for name in required:
     assert (APP / name).is_file() and (APP / name).stat().st_size > 0, name
-checksums = {p.relative_to(APP).as_posix(): sha(p) for p in sorted(APP.rglob('*')) if p.is_file() and p.name != 'SHA256SUMS.txt'}
+for p in APP.rglob('.DS_Store'):
+    p.unlink(missing_ok=True)
+checksums = {p.relative_to(APP).as_posix(): sha(p) for p in sorted(APP.rglob('*')) if p.is_file() and p.name != 'SHA256SUMS.txt' and p.name != '.DS_Store'}
 (APP / 'SHA256SUMS.txt').write_text(''.join(f'{digest}  {name}\n' for name, digest in checksums.items()), encoding='utf-8')
 archive = ROOT / 'dist' / (TITLE + '.zip')
 temporary = archive.with_suffix('.zip.tmp')
 with zipfile.ZipFile(temporary, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
-    for path in [APP, *sorted(APP.rglob('*'))]:
+    for path in [APP, *sorted(p for p in APP.rglob('*') if p.name != '.DS_Store')]:
         if path.is_symlink():
             raise ValueError('Unexpected package symlink: ' + str(path))
         name = path.relative_to(APP.parent).as_posix() + ('/' if path.is_dir() else '')
@@ -64,7 +71,7 @@ with zipfile.ZipFile(temporary, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z
         z.writestr(info, b'' if path.is_dir() else path.read_bytes())
 with zipfile.ZipFile(temporary) as z:
     assert z.testzip() is None
-    expected = {TITLE + '/' + p.relative_to(APP).as_posix() for p in APP.rglob('*') if p.is_file()}
+    expected = {TITLE + '/' + p.relative_to(APP).as_posix() for p in APP.rglob('*') if p.is_file() and p.name != '.DS_Store'}
     assert {i.filename for i in z.infolist() if not i.is_dir()} == expected
     for item in z.infolist():
         assert item.filename.startswith(TITLE + '/') and (item.external_attr >> 16) & 0o777 == 0o777

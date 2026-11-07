@@ -37,7 +37,7 @@ class Screen
     Visualizer visualizer_;
     MediaMotion media_motion_;
     Spindle spindle_;
-    hui::gfx::Font regular_, semibold_, doto_, visual_mono_;
+    hui::gfx::Font regular_, semibold_, doto_, visual_mono_, chinese_;
     hui::ui::Fonts fonts_;
     hui::ui::Theme theme_;
     hui::gfx::Color accent = hui::gfx::Color::rgb(0xd71920);

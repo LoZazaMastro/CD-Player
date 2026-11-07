@@ -45,7 +45,7 @@ std::string write_atomic(const std::string &path, std::string_view data);
 
 // Reads a whole file of at most max_bytes. Returns false if it is missing or
 // unreadable.
-bool read_file(const std::string &path, std::string *data, std::size_t max_bytes = 4u << 20);
+bool read_file(const std::string &path, std::string *data, std::size_t max_bytes = 64u << 20);
 
 // Names of the files in a directory. Reads the build-generated index.txt
 // (one name per line) when present, because directory listing returns

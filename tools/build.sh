@@ -269,7 +269,7 @@ done
 # audio folder carries an index of its files (read by save::list_files).
 for dir in "$app/assets/audio/music" "$app"/assets/audio/sfx/*/; do
     [[ -d $dir ]] || continue
-    (cd "$dir" && find . -maxdepth 1 -type f ! -name index.txt -printf '%f\n' | LC_ALL=C sort > index.txt)
+    (cd "$dir" && find . -maxdepth 1 -type f ! -name index.txt | sed 's|^\./||' | LC_ALL=C sort > index.txt)
 done
 
 [[ -f $root/runtime/libc.prx ]] || bash "$root/tools/rebuild-libc.sh"

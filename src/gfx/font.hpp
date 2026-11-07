@@ -100,6 +100,10 @@ class Font
     {
         return atlas_;
     }
+    const std::vector<font_format::Glyph> &glyphs() const
+    {
+        return glyphs_;
+    }
     // True when this face or one of its fallbacks draws the code point.
     bool has_glyph(std::uint32_t codepoint) const;
 

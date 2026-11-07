@@ -95,7 +95,13 @@ if [[ -z $zlib_library || ! -f $zlib_root/usr/include/zlib.h ||
     (
         cd "$zlib_source"
         CC="$compiler" AR="$archiver" RANLIB="$ranlib" ./configure --static --prefix=/usr
-        make --jobserver-style=pipe -j "$jobs" CC="$compiler" AR="$archiver" RANLIB="$ranlib"
+        make_jobs_flag=""
+        if make --help 2>&1 | grep -q jobserver-style; then make_jobs_flag="--jobserver-style=pipe"; fi
+        if [[ $(uname -s) == "Darwin" ]]; then
+            make $make_jobs_flag -j "$jobs" CC="$compiler"
+        else
+            make $make_jobs_flag -j "$jobs" CC="$compiler" AR="$archiver" RANLIB="$ranlib"
+        fi
         mkdir -p "$zlib_root/usr/include" "$zlib_root/usr/lib"
         cp zlib.h zconf.h "$zlib_root/usr/include/"
         cp libz.a "$zlib_root/usr/lib/"
